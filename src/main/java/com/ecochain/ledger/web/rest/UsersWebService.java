@@ -1,18 +1,6 @@
 package com.ecochain.ledger.web.rest;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
@@ -21,18 +9,25 @@ import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.SendVodeService;
-import com.ecochain.ledger.service.UserDetailsService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
-import com.ecochain.ledger.util.AjaxResponse;
-import com.ecochain.ledger.util.Base64;
-import com.ecochain.ledger.util.InternetUtil;
-import com.ecochain.ledger.util.MD5Util;
-import com.ecochain.ledger.util.RequestUtils;
-import com.ecochain.ledger.util.StringUtil;
-import com.ecochain.ledger.util.Validator;
+import com.ecochain.ledger.service.UsersDetailsService;
+import com.ecochain.ledger.util.*;
+import com.github.pagehelper.PageInfo;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * 总入口
@@ -41,10 +36,6 @@ import com.sun.jna.Native;
 @RequestMapping(value = "/api/user")
 public class UsersWebService extends BaseWebService {
 
-   /* @Autowired
-    private SessionUtil sessionUtil;
-    @Autowired
-    private CacheManager cacheManager;*/
     @Autowired
     private UserLoginService userLoginService;
     @Autowired
@@ -53,7 +44,7 @@ public class UsersWebService extends BaseWebService {
     private SendVodeService sendVodeService;
     
     @Resource(name="userDetailsService")
-    private UserDetailsService userDetailsService;
+    private UsersDetailsService userDetailsService;
     
     /* ==================================================登录过滤========================================================== */
     
@@ -111,6 +102,22 @@ public class UsersWebService extends BaseWebService {
         }
         return ar;
     }
+    
+    @RequestMapping(value="/listPageUser",method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxResponse listPageUser(HttpServletRequest request)throws Exception{
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = this.getPageData();
+        Map<String,Object> data = new HashMap<String,Object>();
+        List<PageData> listPageUser = userDetailsService.listPageUsers(pd);
+        data.put("pageInfo", new PageInfo<PageData>(listPageUser));
+        /*data.put("pd", pd);
+        data.put("page", pd.getPage());
+        data.put("rows", pd.getRows());*/
+        ar.setSuccess(true);
+        ar.setData(data);
+        return ar;
+    }
 	
 	
 	/**
@@ -118,7 +125,7 @@ public class UsersWebService extends BaseWebService {
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	@ResponseBody
-	public AjaxResponse login(HttpServletRequest request,HttpServletResponse response){
+	public AjaxResponse login(HttpServletRequest request, HttpServletResponse response){
 	    AjaxResponse ar = new AjaxResponse();
 		Map<String,Object> data  = new HashMap<String,Object>();
 		PageData pd = new PageData();
@@ -141,18 +148,17 @@ public class UsersWebService extends BaseWebService {
             pd.put("account", account);
             password = MD5Util.getMd5Code(password);
             pd.put("password", password);
-            pd = userDetailsService.getUserByAccAndPass(pd,Constant.VERSION_NO);
+            pd = userDetailsService.getUserByAccAndPass(pd, Constant.VERSION_NO);
             if(pd != null){
                 if("1".equals(pd.getString("status"))){
                     pd.put("lastlogin_ip", InternetUtil.getRemoteAddr(request));
                     pd.put("lastlogin_port", InternetUtil.getRemotePort(request));
-                    userDetailsService.updateLoginTimeById(pd,Constant.VERSION_NO);
+                    userDetailsService.updateLoginTimeById(pd, Constant.VERSION_NO);
                     
-                    PageData userInfo = userDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"),Constant.VERSION_NO);
+                    PageData userInfo = userDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"), Constant.VERSION_NO);
                     String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-//                    sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
+                    SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
                     data.put("CSESSIONID", Base64.getBase64(sessionId));
-                    data.put("role_id", userInfo.getString("role_id"));
                     ar.setData(data);
                     ar.setSuccess(true);
                     ar.setMessage("登陆成功！");
@@ -188,7 +194,7 @@ public class UsersWebService extends BaseWebService {
      */
     @RequestMapping(value="/register", method=RequestMethod.POST)
     @ResponseBody
-    public AjaxResponse register(HttpServletRequest request,HttpServletResponse response){
+    public AjaxResponse register(HttpServletRequest request, HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data  = new HashMap<String,Object>();
         try {
@@ -232,7 +238,7 @@ public class UsersWebService extends BaseWebService {
             
             
             //判断用户是否已存在
-            if(userDetailsService.findIsExist(account,Constant.VERSION_NO)){
+            if(userDetailsService.findIsExist(account, Constant.VERSION_NO)){
                 ar.setSuccess(false);
                 ar.setMessage("该账号已注册！");
                 ar.setErrorCode(CodeConstant.ACCOUNT_EXISTS);
@@ -251,7 +257,7 @@ public class UsersWebService extends BaseWebService {
             pd.put("public_key", jsonObj.getJSONObject("result").getString("PubKey"));
             pd.put("address", jsonObj.getJSONObject("result").getString("PubKey"));*/
             
-            if(!userDetailsService.addUser(pd,Constant.VERSION_NO)){            
+            if(!userDetailsService.addUser(pd, Constant.VERSION_NO)){
                 ar.setSuccess(false);
                 ar.setMessage("注册失败！");
                 ar.setErrorCode(CodeConstant.REGISTER_FAIL);
@@ -296,9 +302,9 @@ public class UsersWebService extends BaseWebService {
                 userDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
             }
             logger.info("=================掉动态库结束=============返回值getPriPubKey="+getPriPubKey);*/
-            PageData userInfo = userDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
+            PageData userInfo = userDetailsService.getUserInfoByAccount(account, Constant.VERSION_NO);
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-//            sessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
+            SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
             data.put("CSESSIONID", Base64.getBase64(sessionId));
             data.put("role_id", pd.getString("role_id"));
             ar.setData(data);
@@ -324,9 +330,8 @@ public class UsersWebService extends BaseWebService {
         Map<String,Object> data = new HashMap<String,Object>();
         try {
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
-//            String userstr = sessionUtil.getAttibuteForUser(sessionId);
-//            JSONObject user = JSONObject.parseObject(userstr);
-            JSONObject user = new JSONObject(); 
+            String userstr = SessionUtil.getAttibuteForUser(sessionId);
+            JSONObject user = JSONObject.parseObject(userstr);
             PageData userInfo = userDetailsService.getUserInfoByUserId(user.getInteger("user_id"), Constant.VERSION_NO);
             data.put("userInfo", userInfo);
             ar.setData(data);
@@ -360,7 +365,7 @@ public class UsersWebService extends BaseWebService {
     @ResponseBody
     public AjaxResponse logout(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
-//        sessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+        SessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
         ar.setSuccess(true);
         ar.setMessage("退出成功！");
         return ar; 
@@ -376,7 +381,7 @@ public class UsersWebService extends BaseWebService {
      */
     @RequestMapping(value="/forgetpwd", method=RequestMethod.POST)
     @ResponseBody
-    public AjaxResponse forgetpwd(HttpServletRequest request,HttpServletResponse response){
+    public AjaxResponse forgetpwd(HttpServletRequest request, HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         try {
             String account  =request.getParameter("account");
@@ -402,7 +407,7 @@ public class UsersWebService extends BaseWebService {
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            if(StringUtil.isEmpty(passWord)||StringUtil.isEmpty(cfPassWord)){
+            if(StringUtil.isEmpty(passWord)|| StringUtil.isEmpty(cfPassWord)){
                 ar.setSuccess(false);
                 ar.setMessage("密码不能为空!");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
@@ -447,14 +452,14 @@ public class UsersWebService extends BaseWebService {
                 return ar;
             }
             //半小时之内的短信验证码有效
-            String tVcode =sendVodeService.findVcodeByPhone(userInfo.getString("mobile_phone"), Constant.VERSION_NO); 
+            String tVcode =sendVodeService.findVcodeByPhone(userInfo.getString("mobile_phone"), Constant.VERSION_NO);
             if(tVcode ==null||!vcode.trim().equals(tVcode.trim())){
                 ar.setSuccess(false);
                 ar.setMessage("验证码输入不正确！");
                 ar.setErrorCode(CodeConstant.ERROR_VCODE);
                 return ar;
             }
-            if(!userLoginService.modifyPwd(account, MD5Util.getMd5Code(passWord),Constant.VERSION_NO)){         
+            if(!userLoginService.modifyPwd(account, MD5Util.getMd5Code(passWord), Constant.VERSION_NO)){
                 ar.setSuccess(false);
                 ar.setMessage("设置密码失败！");
                 ar.setErrorCode(CodeConstant.UPDATE_FAIL);
@@ -506,7 +511,7 @@ public class UsersWebService extends BaseWebService {
             public Clibrary INSTANCE = (Clibrary) Native.loadLibrary("/data/lib/libbtcsign.so", Clibrary.class);
             //获得公钥和私钥,第一个参数密钥种子为可选项，如果有值，则长度为32
 //            public int GetPriPubKey( String seeds, String prikey, String pubkey, String errmsg);
-            public int GetPriPubKey( byte[] seeds, byte[] prikey, byte[] pubkey, byte[] errmsg);
+            public int GetPriPubKey(byte[] seeds, byte[] prikey, byte[] pubkey, byte[] errmsg);
 
             //获得数据的sign,输入私钥和数据，返回签名
 //            public int GetDataSign( String prikey, String data, String sign, String errmsg);
