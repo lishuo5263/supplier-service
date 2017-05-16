@@ -84,11 +84,11 @@ public class ShopGoodsServiceImpl implements ShopGoodsService {
             map.put("goodsListDetail",this.shopGoodsMapper.queryGoodsDetailInfoById(goodsId));//普通商品详情
         }
         querySku=(ArrayList)map.get("goodsListDetail");
-        if(querySku !=null && querySku.size() >0){
+        /*if(querySku !=null && querySku.size() >0){
             if(querySku.get(0).getIsSkuType()!=0){
                 map.put("goodsListSku",this.shopGoodsSkuMapper.searchGoodsSku(goodsId));//商品sku参数
             }
-        }
+        }*/
         map.put("goodsSupplierInfo",this.shopSupplierMapper.searchSupplierInfo(goodsId));//供应商名称
         map.put("goodsOtherBrand",this.shopGoodsBrandDetailMapper.searchGoodsOtherBrand(goodsId));//同类其他品牌名称查询
         map.put("goodsOtherInfo",this.shopGoodsMapper.searchGoodsOtherInfo(goodsId));//同类其他品牌商品查询

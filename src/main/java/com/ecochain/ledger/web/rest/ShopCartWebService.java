@@ -1,4 +1,4 @@
-package com.ecochain.ledger.rest;
+package com.ecochain.ledger.web.rest;
 
 
 import com.ecochain.ledger.constants.CodeConstant;
@@ -9,7 +9,6 @@ import com.ecochain.ledger.model.ShopGoods;
 import com.ecochain.ledger.service.ShopCartService;
 import com.ecochain.ledger.service.ShopGoodsService;
 import com.ecochain.ledger.util.AjaxResponse;
-import com.ecochain.ledger.web.rest.BaseAction;
 import com.qkl.util.help.StringUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -266,16 +265,11 @@ public class ShopCartWebService extends BaseAction {
     @GetMapping("/myCartToGenerateOrder")
     @ApiOperation(nickname = "myCartToGenerateOrder", value = "购物车跳转生成订单必要信息查询", notes = "购物车跳转生成订单必要信息查询！！")
     @ApiImplicitParams({
-           /* @ApiImplicitParam(name = "type", value = "查询类型", required = true, paramType = "body", dataType = "BlogArticleBeen"),
-            @ApiImplicitParam(name = "path", value = "url上的数据", required = true, paramType = "path", dataType = "Long"),
-            @ApiImplicitParam(name = "query", value = "query类型参数", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "apiKey", value = "header中的数据", required = true, paramType = "header", dataType = "String"),*/
-
             @ApiImplicitParam(name = "type", value = "查询类型", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "userId", value = "用户ID", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "num", value = "购买个数", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "goodsId", value = "商品ID", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "isPromote", value = "商品价格类型", required = true, paramType = "query", dataType = "String")
+            @ApiImplicitParam(name = "isPromote", value = "商品订单类型 0普通订单 1秒杀订单 2人民币订单", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse myCartToGenerateOrder(HttpServletRequest request, Page page){
         PageData pd = new PageData();
