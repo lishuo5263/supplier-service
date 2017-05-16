@@ -11,14 +11,14 @@ public interface SysMaxnumService {
 	 * 查询最大号码
 	 * @param notype
 	 */
-	public Long findMaxNo(String notype,String versionNo) throws Exception;
-	
+	public Long findMaxNo(String notype, String versionNo) throws Exception;
+
 	/**
 	 * 修改最大号码
 	 * @param pd
 	 * @param versionNo
 	 */
-	public boolean modifyMaxNo(PageData pd,String versionNo) throws Exception;
+	public boolean modifyMaxNo(PageData pd, String versionNo) throws Exception;
 	
 	
 }

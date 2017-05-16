@@ -1,30 +1,22 @@
 package com.ecochain.ledger.service.impl;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.ecochain.ledger.constants.CodeConstant;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.Logger;
+import com.ecochain.ledger.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ecochain.ledger.constants.CodeConstant;
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.AccDetailService;
-import com.ecochain.ledger.service.PayOrderService;
-import com.ecochain.ledger.service.SysGenCodeService;
-import com.ecochain.ledger.service.UserDetailsService;
-import com.ecochain.ledger.service.UserLoginService;
-import com.ecochain.ledger.service.UserService;
-import com.ecochain.ledger.service.UserWalletService;
-import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.Logger;
-import com.ecochain.ledger.util.MD5Util;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component("userService")
 public class UserServiceImpl implements UserService {

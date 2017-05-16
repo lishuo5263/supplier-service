@@ -4,19 +4,19 @@ package com.ecochain.ledger.service;
 import com.ecochain.ledger.model.PageData;
 
 public interface UserLoginService {
-    boolean deleteById(Integer id,String versionNo) throws Exception;
+    boolean deleteById(Integer id, String versionNo) throws Exception;
 
-    boolean insert(PageData pd,String versionNo) throws Exception;
+    boolean insert(PageData pd, String versionNo) throws Exception;
 
-    boolean insertSelective(PageData pd,String versionNo) throws Exception;
+    boolean insertSelective(PageData pd, String versionNo) throws Exception;
 
-    PageData selectById(Integer id,String versionNo) throws Exception;
+    PageData selectById(Integer id, String versionNo) throws Exception;
 
-    boolean updateByIdSelective(PageData pd,String versionNo) throws Exception;
+    boolean updateByIdSelective(PageData pd, String versionNo) throws Exception;
 
-    boolean updateById(PageData pd,String versionNo) throws Exception;
-    
-    PageData getUserByAccount(PageData pd,String versionNo) throws Exception;
+    boolean updateById(PageData pd, String versionNo) throws Exception;
+
+    PageData getUserByAccount(PageData pd, String versionNo) throws Exception;
     /**
      * @describe:根据账号查询登陆信息
      * @author: zhangchunming
@@ -26,7 +26,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getUserLoginByAccount(String account,String versionNo) throws Exception;
+    PageData getUserLoginByAccount(String account, String versionNo) throws Exception;
     /**
      * @describe:根据账号查询用户信息
      * @author: zhangchunming
@@ -36,7 +36,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getUserInfoByAccount(String account,String versionNo) throws Exception;
+    PageData getUserInfoByAccount(String account, String versionNo) throws Exception;
     /**
      * @describe:更新登录时间
      * @author: zhangchunming
@@ -46,7 +46,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateLoginTimeById(PageData pd,String versionNo) throws Exception;
+    boolean updateLoginTimeById(PageData pd, String versionNo) throws Exception;
     /**
      * @describe:判断用户是否存在
      * @author: zhangchunming
@@ -56,7 +56,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: boolean
      */
-    boolean findIsExist(String account,String versionNo) throws Exception;
+    boolean findIsExist(String account, String versionNo) throws Exception;
     /**
      * @describe:更新错误次数
      * @author: zhangchunming
@@ -66,7 +66,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateErrorTimesById(Integer id,String versionNo) throws Exception;
+    boolean updateErrorTimesById(Integer id, String versionNo) throws Exception;
     /**
      * @describe:查询错误登陆次数
      * @author: zhangchunming
@@ -76,7 +76,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: Integer
      */
-    Integer getErrorTimes(String account,String versionNo) throws Exception;
+    Integer getErrorTimes(String account, String versionNo) throws Exception;
     /**
      * @describe:修改手机号
      * @author: zhangchunming
@@ -87,7 +87,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: boolean
      */
-    boolean modifyPwd(String account,String password,String versionNo) throws Exception;
+    boolean modifyPwd(String account, String password, String versionNo) throws Exception;
     /**
      * @describe:修改手机号
      * @author: zhangchunming
@@ -97,7 +97,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: boolean
      */
-    boolean modifyPhone(PageData pd,String versionNo)throws Exception;
+    boolean modifyPhone(PageData pd, String versionNo)throws Exception;
     /**
      * @describe:修改密码
      * @author: zhangchunming
@@ -107,7 +107,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: boolean
      */
-    boolean modifypwdByUserId(PageData pd,String versionNo)throws Exception;
+    boolean modifypwdByUserId(PageData pd, String versionNo)throws Exception;
     /**
      * @describe:根据user_id查询用户登陆表
      * @author: zhangchunming
@@ -117,7 +117,7 @@ public interface UserLoginService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getUserLoginByUserId(String user_id,String versionNo)throws Exception;
+    PageData getUserLoginByUserId(String user_id, String versionNo)throws Exception;
     /**
      * @describe:根据用户ID查询用户信息
      * @author: zhangchunming
@@ -127,5 +127,5 @@ public interface UserLoginService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getUserInfoByUserId(String user_id,String versionNo)throws Exception;
+    PageData getUserInfoByUserId(String user_id, String versionNo)throws Exception;
 }

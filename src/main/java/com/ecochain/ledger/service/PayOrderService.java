@@ -1,19 +1,19 @@
 package com.ecochain.ledger.service;
 
-import java.util.List;
-
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 
+import java.util.List;
+
 public interface PayOrderService {
 
-    boolean deleteById(Integer id,String versionNo) throws Exception;
+    boolean deleteById(Integer id, String versionNo) throws Exception;
 
-    boolean insert(PageData pd,String versionNo) throws Exception;
+    boolean insert(PageData pd, String versionNo) throws Exception;
 
-    boolean insertSelective(PageData pd,String versionNo) throws Exception;
+    boolean insertSelective(PageData pd, String versionNo) throws Exception;
 
-    PageData selectById(Integer id,String versionNo) throws Exception;
+    PageData selectById(Integer id, String versionNo) throws Exception;
     /**
      * @describe:根据支付号查询支付工单
      * @author: zhangchunming
@@ -23,11 +23,11 @@ public interface PayOrderService {
      * @throws Exception
      * @return: PageData
      */
-    PageData selectByPayNo(String PayNo,String versionNo) throws Exception;
+    PageData selectByPayNo(String PayNo, String versionNo) throws Exception;
 
-    boolean updateByIdSelective(PageData pd,String versionNo) throws Exception;
+    boolean updateByIdSelective(PageData pd, String versionNo) throws Exception;
 
-    boolean updateById(PageData pd,String versionNo) throws Exception;
+    boolean updateById(PageData pd, String versionNo) throws Exception;
     /**
      * @describe:添加支付记录
      * @author: zhangchunming
@@ -37,7 +37,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: boolean
      */
-    boolean addPayOrder(PageData pd,String versionNo) throws Exception;
+    boolean addPayOrder(PageData pd, String versionNo) throws Exception;
     /**
      * @describe:根据支付号修改订单状态
      * @author: zhangchunming
@@ -47,7 +47,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateStatusByPayNo(PageData pd,String versionNo) throws Exception;
+    boolean updateStatusByPayNo(PageData pd, String versionNo) throws Exception;
     /**
      * @describe:根据hash修改支付工单状态
      * @author: zhangchunming
@@ -57,7 +57,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateStatusByHash(PageData pd,String versionNo) throws Exception;
+    boolean updateStatusByHash(PageData pd, String versionNo) throws Exception;
     /**
      * @describe:查询大礼包列表
      * @author: zhangchunming
@@ -67,7 +67,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: List<PageData>
      */
-    List<PageData> listPageBigGit(Page page,String versionNo) throws Exception;
+    List<PageData> listPageBigGit(Page page, String versionNo) throws Exception;
     /**
      * @describe:分页查询提现记录
      * @author: zhangchunming
@@ -77,7 +77,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: List<PageData>
      */
-    PageData listPageWithDrawal(Page page,String versionNo) throws Exception;
+    PageData listPageWithDrawal(Page page, String versionNo) throws Exception;
     /**
      * @describe:分页查询转三界石记录
      * @author: zhangchunming
@@ -87,7 +87,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: PageData
      */
-    PageData listPageTransferSJS(Page page,String versionNo) throws Exception;
+    PageData listPageTransferSJS(Page page, String versionNo) throws Exception;
     /**
      * @describe:定时更新提现完成订单
      * @author: zhangchunming
@@ -104,7 +104,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: boolean
      */
-    boolean applyWithDrawal(PageData pd,String versionNo)throws Exception;
+    boolean applyWithDrawal(PageData pd, String versionNo)throws Exception;
     /**
      * @describe:判断是否锁定
      * @author: zhangchunming
@@ -114,7 +114,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: boolean
      */
-    boolean isLockPayOrder(String pay_no,String versionNo)throws Exception;
+    boolean isLockPayOrder(String pay_no, String versionNo)throws Exception;
     /**
      * @describe:锁定支付工单
      * @author: zhangchunming
@@ -124,7 +124,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: boolean
      */
-    boolean lockPayOrder(String pay_no,String versionNo)throws Exception;
+    boolean lockPayOrder(String pay_no, String versionNo)throws Exception;
     /**
      * @describe:解锁支付工单
      * @author: zhangchunming
@@ -134,7 +134,7 @@ public interface PayOrderService {
      * @throws Exception
      * @return: boolean
      */
-    boolean unlockPayOrder(String pay_no,String versionNo)throws Exception;
+    boolean unlockPayOrder(String pay_no, String versionNo)throws Exception;
     /**
      * @describe:提现成功或者拒绝时设置确认时间
      * @author: zhangchunming

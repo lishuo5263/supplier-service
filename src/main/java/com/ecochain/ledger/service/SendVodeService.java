@@ -13,7 +13,7 @@ public interface SendVodeService {
      * @throws Exception
      * @return: String
      */
-    public String findVcodeByPhone(String phone,String versionNo) throws Exception;
+    public String findVcodeByPhone(String phone, String versionNo) throws Exception;
     /**
      * @describe:查询一分钟之内验证码发送次数
      * @author: zhangchunming
@@ -23,7 +23,7 @@ public interface SendVodeService {
      * @throws Exception
      * @return: Integer
      */
-    public Integer findCountByMinute(String phone,String versionNo) throws Exception;
+    public Integer findCountByMinute(String phone, String versionNo) throws Exception;
     /**
      * @describe:查询一天之内验证码发送次数
      * @author: zhangchunming
@@ -33,7 +33,7 @@ public interface SendVodeService {
      * @throws Exception
      * @return: Integer
      */
-    public Integer findCountByDay(String phone,String versionNo) throws Exception;
+    public Integer findCountByDay(String phone, String versionNo) throws Exception;
     /**
      * @describe:发送验证码
      * @author: zhangchunming
@@ -43,7 +43,7 @@ public interface SendVodeService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean addVcode(PageData pd,String versionNo) throws Exception;
+    public boolean addVcode(PageData pd, String versionNo) throws Exception;
     /**
      * @describe:查询30分钟内是否发送验证码
      * @author: zhangchunming
@@ -53,7 +53,7 @@ public interface SendVodeService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean isSendBy30Minute(String phone,String versionNo) throws Exception;
+    public boolean isSendBy30Minute(String phone, String versionNo) throws Exception;
     /**
      * @describe:查询30分钟内验证码发送次数
      * @author: zhangchunming
@@ -63,8 +63,8 @@ public interface SendVodeService {
      * @throws Exception
      * @return: Integer
      */
-	public Integer findCountBy30Minute(String phone,String versionNo) throws Exception;
-	
+	public Integer findCountBy30Minute(String phone, String versionNo) throws Exception;
+
 	/**
 	 * @describe:查询半小时或者当天短信是否超过限制数量
 	 * @author: zhangchunming
@@ -74,5 +74,5 @@ public interface SendVodeService {
 	 * @throws Exception
 	 * @return: Integer
 	 */
-	public boolean smsCountIsOver(PageData pd,String versionNo) throws Exception;
+	public boolean smsCountIsOver(PageData pd, String versionNo) throws Exception;
 }
