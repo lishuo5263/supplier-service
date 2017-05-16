@@ -313,11 +313,6 @@
 			<artifactId>spring-boot-starter-redis</artifactId>
 		</dependency>
 
-        <dependency>
-            <groupId>com.qkl.util</groupId>
-            <artifactId>qkl_util</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
 	</dependencies>
     
 	<dependencyManagement>

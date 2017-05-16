@@ -1,13 +1,13 @@
 package com.ecochain.ledger.service;
 
-import com.ecochain.ledger.model.PageData;
-
 import java.util.List;
+
+import com.ecochain.ledger.model.PageData;
 
 public interface UsersDetailsService {
     
-    boolean insertSelective(PageData pd, String versionNo) throws Exception;
-
+    boolean insertSelective(PageData pd ,String versionNo) throws Exception;
+    
     /**
      * @describe:通过账号和密码获取数据
      * @author: zhangchunming
@@ -16,8 +16,8 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: PageData
      */
-    public PageData getUserByAccAndPass(PageData pd, String versionNo) throws Exception;
-
+    public PageData getUserByAccAndPass(PageData pd,String versionNo) throws Exception;
+    
     /**
      * @describe:更新登陆时间
      * @author: zhangchunming
@@ -26,8 +26,8 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean updateLoginTimeById(PageData pd, String versionNo) throws Exception;
-
+    public boolean updateLoginTimeById(PageData pd,String versionNo) throws Exception;
+    
     /**
      * @describe:查询用户信息
      * @author: zhangchunming
@@ -37,7 +37,7 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: PageData
      */
-    public PageData getUserInfoByUserId(Integer user_id, String versionNo) throws Exception;
+    public PageData getUserInfoByUserId(Integer user_id,String versionNo) throws Exception;
     /**
      * @describe:判断用户是否存在
      * @author: zhangchunming
@@ -47,7 +47,7 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean findIsExist(String account, String versionNo) throws Exception;
+    public boolean findIsExist(String account,String versionNo) throws Exception;
     /**
      * @describe:用户注册
      * @author: zhangchunming
@@ -57,7 +57,7 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean addUser(PageData pd, String versionNo) throws Exception;
+    public boolean addUser(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:注册用户数统计
      * @author: zhangchunming
@@ -76,7 +76,7 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: PageData
      */
-    public PageData getUserInfoByAccount(String account, String versionNo) throws Exception;
+    public PageData getUserInfoByAccount(String account,String versionNo) throws Exception;
 
     public PageData findAcceptInfo(PageData pd)throws Exception ;
     /**
@@ -88,8 +88,8 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateByIdSelective(PageData pd, String versionNo) throws Exception;
-
+    boolean updateByIdSelective(PageData pd,String versionNo) throws Exception;
+    
     /**
      * @describe:修改手机号
      * @author: zhangchunming
@@ -99,7 +99,7 @@ public interface UsersDetailsService {
      * @throws Exception
      * @return: boolean
      */
-    boolean modifyPhone(PageData pd, String versionNo)throws Exception;
+    boolean modifyPhone(PageData pd,String versionNo)throws Exception;
     
     public List<PageData> listPageUsers(PageData pd)throws Exception;
     

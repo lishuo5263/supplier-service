@@ -1,21 +1,21 @@
 package com.ecochain.ledger.service;
 
-import com.ecochain.ledger.model.PageData;
-
 import java.util.List;
 
+import com.ecochain.ledger.model.PageData;
+
 public interface UserAddressService {
-    boolean deleteById(Integer id, String versionNo) throws Exception;
+    boolean deleteById(Integer id,String versionNo) throws Exception;
 
-    boolean insert(PageData pd, String versionNo) throws Exception;
+    boolean insert(PageData pd,String versionNo) throws Exception;
 
-    boolean insertSelective(PageData pd, String versionNo) throws Exception;
+    boolean insertSelective(PageData pd,String versionNo) throws Exception;
 
-    PageData selectById(Integer id, String versionNo) throws Exception;
+    PageData selectById(Integer id,String versionNo) throws Exception;
 
-    boolean updateByIdSelective(PageData pd, String versionNo) throws Exception;
+    boolean updateByIdSelective(PageData pd,String versionNo) throws Exception;
 
-    boolean updateById(PageData pd, String versionNo) throws Exception;
+    boolean updateById(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:查询地址列表
      * @author: zhangchunming
@@ -25,7 +25,7 @@ public interface UserAddressService {
      * @throws Exception
      * @return: List<PageData>
      */
-    List<PageData> getUserAddressList(PageData pd, String versionNo) throws Exception;
+    List<PageData> getUserAddressList(PageData pd,String versionNo) throws Exception; 
     /**
      * @describe:查询单条地址
      * @author: zhangchunming
@@ -35,7 +35,7 @@ public interface UserAddressService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getOneAddress(PageData pd, String versionNo) throws Exception;
+    PageData getOneAddress(PageData pd,String versionNo) throws Exception; 
     /**
      * @describe:设置默认地址
      * @author: zhangchunming
@@ -45,7 +45,7 @@ public interface UserAddressService {
      * @throws Exception
      * @return: boolean
      */
-    boolean setDefault(PageData pd, String versionNo) throws Exception;
+    boolean setDefault(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:取消默认地址
      * @author: zhangchunming
@@ -55,7 +55,7 @@ public interface UserAddressService {
      * @throws Exception
      * @return: boolean
      */
-    boolean calcelDefault(PageData pd, String versionNo) throws Exception;
+    boolean calcelDefault(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:设置默认地址(setDefault和calcelDefault)
      * @author: zhangchunming
@@ -66,7 +66,7 @@ public interface UserAddressService {
      * @throws Exception
      * @return: boolean
      */
-    boolean setDefaultAddress(PageData pd, String versionNo) throws Exception;
+    boolean setDefaultAddress(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:根据address_id查询地址
      * @author: zhangchunming
@@ -76,6 +76,6 @@ public interface UserAddressService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getOneAddressById(String address_id, String versionNo) throws Exception;
+    PageData getOneAddressById(String address_id,String versionNo) throws Exception;
     
 }

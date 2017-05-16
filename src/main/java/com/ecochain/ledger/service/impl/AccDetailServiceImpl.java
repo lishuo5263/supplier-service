@@ -1,14 +1,15 @@
 package com.ecochain.ledger.service.impl;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
+
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.AccDetailService;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.List;
-
 @Component("accDetailService")
 public class AccDetailServiceImpl implements AccDetailService {
 

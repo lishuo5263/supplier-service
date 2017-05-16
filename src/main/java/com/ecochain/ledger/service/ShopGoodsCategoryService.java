@@ -1,10 +1,10 @@
 package com.ecochain.ledger.service;
 
+import java.util.List;
+
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopGoodsCategory;
-
-import java.util.List;
 
 /**
  * Created by LiShuo on 2016/10/25.

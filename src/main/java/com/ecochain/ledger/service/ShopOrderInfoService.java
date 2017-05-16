@@ -1,11 +1,9 @@
 package com.ecochain.ledger.service;
-
+import java.util.List;
+import java.util.Map;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopOrderGoods;
-
-import java.util.List;
-import java.util.Map;
 
 public interface ShopOrderInfoService {
     /**
@@ -17,7 +15,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: List<PageData>
      */
-    PageData listPageShopOrder(Page page, String versionNo) throws Exception;
+    PageData listPageShopOrder(Page page,String versionNo) throws Exception;
     /**
      * @describe:个人中心按订单状态查询数量
      * @author: zhangchunming
@@ -37,7 +35,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getShopOrderNumByStatus(PageData pd, String versionNo) throws Exception;
+    PageData getShopOrderNumByStatus(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:查询商城订单总数
      * @author: zhangchunming
@@ -47,7 +45,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: PageData
      */
-    Integer getShopOrderTotalNum(Integer user_id, String versionNo) throws Exception;
+    Integer getShopOrderTotalNum(Integer user_id,String versionNo) throws Exception;
     /**
      * @describe:查询商城订单总数(根据用户还是供应商添加不同的查询条件)
      * @author: zhangchunming
@@ -57,7 +55,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: Integer
      */
-    Integer getShopOrderTotalNum(PageData pd, String versionNo) throws Exception;
+    Integer getShopOrderTotalNum(PageData pd,String versionNo) throws Exception;
     /**
      * 创建订单，同时创建商品信息
      * @param ShopOrderGoods
@@ -84,7 +82,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: PageData
      */
-    PageData selectById(Integer order_id, String versionNo) throws Exception;
+    PageData selectById(Integer order_id,String versionNo) throws Exception;
     /**
      * @describe:确认收货
      * @author: zhangchunming
@@ -94,7 +92,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean confirmReceipt(PageData pd, String versionNo) throws Exception;
+    boolean confirmReceipt(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:确认收货
      * @author: zhangchunming
@@ -104,7 +102,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean shopReceipt(PageData pd, String versionNo) throws Exception;
+    boolean shopReceipt(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:发货
      * @author: zhangchunming
@@ -114,7 +112,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean deliverGoods(PageData pd, String versionNo) throws Exception;
+    boolean deliverGoods(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:立即支付
      * @author: zhangchunming
@@ -124,7 +122,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean payNow(PageData pd, String versionNo) throws Exception;
+    boolean payNow(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:修改商城订单状态
      * @author: zhangchunming
@@ -134,7 +132,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateShopOrderStatus(PageData pd, String versionNo) throws Exception;
+    boolean updateShopOrderStatus(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:通过hash更新hash状态
      * @author: zhangchunming
@@ -144,7 +142,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateShopOrderStatusByHash(PageData pd, String versionNo) throws Exception;
+    boolean updateShopOrderStatusByHash(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:根据订单号查询所有商品
      * @author: zhangchunming
@@ -154,7 +152,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: List<PageData>
      */
-    List<PageData> getGoodsByOrderId(PageData pd, String versionNo) throws Exception;
+    List<PageData> getGoodsByOrderId(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:根据订单号查询商城订单
      * @author: zhangchunming
@@ -164,7 +162,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getShopOrderByOrderNo(PageData pd, String versionNo) throws Exception;
+    PageData getShopOrderByOrderNo(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:根据订单号更新订单商品关联表订单Id
      * @author: zhangchunming
@@ -174,7 +172,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateOrderIdByOrderNo(String order_no, String versionNo) throws Exception;
+    boolean updateOrderIdByOrderNo(String order_no,String versionNo) throws Exception;
     /**
      * @describe:根据用户ID查询供应商信息
      * @author: zhangchunming
@@ -184,7 +182,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: PageData
      */
-    List<PageData> getSupplierByUserId(String user_id, String versionNo) throws Exception;
+    List<PageData> getSupplierByUserId(String user_id,String versionNo) throws Exception;
     /**
      * @describe:根据user_id查询供应商
      * @author: zhangchunming
@@ -194,7 +192,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getOneSupplierByUserId(String user_id, String versionNo) throws Exception;
+    PageData getOneSupplierByUserId(String user_id,String versionNo) throws Exception;
     /**
      * @describe: 判断是否为最后一个订单商品
      * @author: zhangchunming
@@ -204,7 +202,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean isLastShopOrder(PageData pd, String versionNo) throws Exception;
+    boolean isLastShopOrder(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:根据订单号更新订单商品状态
      * @author: zhangchunming
@@ -214,7 +212,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateStateByOrderNo(PageData pd, String versionNo) throws Exception;
+    boolean updateStateByOrderNo(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:根据统计标志查询商城订单列表
      * @author: zhangchunming
@@ -224,7 +222,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: List<PageData>
      */
-    List<PageData> getShopOrderListByConflag(String conflag, String versionNo) throws Exception;
+    List<PageData> getShopOrderListByConflag(String conflag,String versionNo) throws Exception;
     /**
      * @describe:定时器确认收货后修改统计标志
      * @author: zhangchunming
@@ -234,7 +232,7 @@ public interface ShopOrderInfoService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateOrderConflag(PageData pd, String versionNo) throws Exception;
+    boolean updateOrderConflag(PageData pd,String versionNo) throws Exception;
 
     /**
      * @describe:获取秒杀商品不支付的订单
@@ -276,7 +274,7 @@ public interface ShopOrderInfoService {
      * @date: 2016年12月5日17:40:46
      * @return
      */
-    boolean updateCancleState(String type, String orderNo, String isHot, String isPromote);
+    boolean updateCancleState(String type, String orderNo,String isHot,String isPromote);
 
     /**
      * 删除秒杀不支付订单
@@ -284,14 +282,14 @@ public interface ShopOrderInfoService {
      * @date: 2017年1月4日17:40:41
      * @return
      */
-    boolean  deleteShopOrderInfo(String type, String orderNo, String skuValue);
+    boolean  deleteShopOrderInfo(String type,String orderNo,String skuValue);
 
     /**
      * 根据订单号查询商品SkuValue
      * @author: lishuo
      * @return
      */
-    String getSkuGoodsInfoByorderNo(String orderNo);
+    String getSkuGoodsInfoByorderNo (String orderNo);
 
     /**
      * 查询用户已秒杀的订单数量

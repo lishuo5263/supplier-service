@@ -1,15 +1,16 @@
 package com.ecochain.ledger.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.ecochain.ledger.mapper.ShopCartMapper;
 import com.ecochain.ledger.mapper.ShopGoodsMapper;
 import com.ecochain.ledger.model.ShopCart;
 import com.ecochain.ledger.model.ShopGoods;
 import com.ecochain.ledger.service.ShopCartService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by LiShuo on 2016/10/26.
@@ -29,7 +30,7 @@ public class ShopCartServiceImpl implements ShopCartService {
     }
 
     @Override
-    public ShopCart queryCartGoods(String userId, String goodsId, String skuValue) {
+    public ShopCart queryCartGoods(String userId,String goodsId,String skuValue) {
         return this.shopCartMapper.queryCartGoods(userId,goodsId,skuValue);
     }
 
@@ -69,7 +70,7 @@ public class ShopCartServiceImpl implements ShopCartService {
     }
 
     @Override
-    public List<ShopGoods> queryGoodsDetailInfoByGoodsId(String goodsId, String isPromote) {
+    public List<ShopGoods> queryGoodsDetailInfoByGoodsId(String goodsId,String isPromote) {
         if("1".equals(isPromote)){
             return this.shopGoodsMapper.queryHotGoodsDetailInfoById(goodsId);
         }else if("0".equals(isPromote)){

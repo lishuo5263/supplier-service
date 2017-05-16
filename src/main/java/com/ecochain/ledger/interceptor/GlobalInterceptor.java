@@ -1,17 +1,22 @@
 package com.ecochain.ledger.interceptor;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ecochain.ledger.constants.CodeConstant;
-import com.ecochain.ledger.constants.CookieConstant;
-import com.ecochain.ledger.util.*;
-import com.qkl.util.help.annotation.LoginVerify;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.annotation.LoginVerify;
+import com.ecochain.ledger.constants.CodeConstant;
+import com.ecochain.ledger.constants.CookieConstant;
+import com.ecochain.ledger.util.AjaxResponse;
+import com.ecochain.ledger.util.Const;
+import com.ecochain.ledger.util.RequestUtils;
+import com.ecochain.ledger.util.SessionUtil;
+import com.ecochain.ledger.util.StringUtil;
 
 
 public class GlobalInterceptor implements HandlerInterceptor{
@@ -66,16 +71,6 @@ public class GlobalInterceptor implements HandlerInterceptor{
                             return false;
     					}
     				}
-    				String user = null;
-                    user = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
-                    if(StringUtil.isEmpty(user)){
-                        ar.setErrorCode(CodeConstant.UNLOGIN);
-                        ar.setMessage("未登录");
-                        ar.setSuccess(false);
-                        response.getWriter().print(JSONObject.toJSONString(ar));
-                        response.getWriter().close();
-                        return false;
-                    }
     			}
     		}
         }

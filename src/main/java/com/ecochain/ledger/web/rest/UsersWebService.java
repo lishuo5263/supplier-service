@@ -1,5 +1,19 @@
 package com.ecochain.ledger.web.rest;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.base.BaseWebService;
@@ -12,22 +26,17 @@ import com.ecochain.ledger.service.SendVodeService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.service.UsersDetailsService;
-import com.ecochain.ledger.util.*;
+import com.ecochain.ledger.util.AjaxResponse;
+import com.ecochain.ledger.util.Base64;
+import com.ecochain.ledger.util.InternetUtil;
+import com.ecochain.ledger.util.MD5Util;
+import com.ecochain.ledger.util.RequestUtils;
+import com.ecochain.ledger.util.SessionUtil;
+import com.ecochain.ledger.util.StringUtil;
+import com.ecochain.ledger.util.Validator;
 import com.github.pagehelper.PageInfo;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /*
  * 总入口
@@ -125,7 +134,7 @@ public class UsersWebService extends BaseWebService {
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	@ResponseBody
-	public AjaxResponse login(HttpServletRequest request, HttpServletResponse response){
+	public AjaxResponse login(HttpServletRequest request,HttpServletResponse response){
 	    AjaxResponse ar = new AjaxResponse();
 		Map<String,Object> data  = new HashMap<String,Object>();
 		PageData pd = new PageData();
@@ -148,14 +157,14 @@ public class UsersWebService extends BaseWebService {
             pd.put("account", account);
             password = MD5Util.getMd5Code(password);
             pd.put("password", password);
-            pd = userDetailsService.getUserByAccAndPass(pd, Constant.VERSION_NO);
+            pd = userDetailsService.getUserByAccAndPass(pd,Constant.VERSION_NO);
             if(pd != null){
                 if("1".equals(pd.getString("status"))){
                     pd.put("lastlogin_ip", InternetUtil.getRemoteAddr(request));
                     pd.put("lastlogin_port", InternetUtil.getRemotePort(request));
-                    userDetailsService.updateLoginTimeById(pd, Constant.VERSION_NO);
+                    userDetailsService.updateLoginTimeById(pd,Constant.VERSION_NO);
                     
-                    PageData userInfo = userDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"), Constant.VERSION_NO);
+                    PageData userInfo = userDetailsService.getUserInfoByUserId((Integer)pd.get("user_id"),Constant.VERSION_NO);
                     String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
                     SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
                     data.put("CSESSIONID", Base64.getBase64(sessionId));
@@ -194,7 +203,7 @@ public class UsersWebService extends BaseWebService {
      */
     @RequestMapping(value="/register", method=RequestMethod.POST)
     @ResponseBody
-    public AjaxResponse register(HttpServletRequest request, HttpServletResponse response){
+    public AjaxResponse register(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data  = new HashMap<String,Object>();
         try {
@@ -238,7 +247,7 @@ public class UsersWebService extends BaseWebService {
             
             
             //判断用户是否已存在
-            if(userDetailsService.findIsExist(account, Constant.VERSION_NO)){
+            if(userDetailsService.findIsExist(account,Constant.VERSION_NO)){
                 ar.setSuccess(false);
                 ar.setMessage("该账号已注册！");
                 ar.setErrorCode(CodeConstant.ACCOUNT_EXISTS);
@@ -257,7 +266,7 @@ public class UsersWebService extends BaseWebService {
             pd.put("public_key", jsonObj.getJSONObject("result").getString("PubKey"));
             pd.put("address", jsonObj.getJSONObject("result").getString("PubKey"));*/
             
-            if(!userDetailsService.addUser(pd, Constant.VERSION_NO)){
+            if(!userDetailsService.addUser(pd,Constant.VERSION_NO)){            
                 ar.setSuccess(false);
                 ar.setMessage("注册失败！");
                 ar.setErrorCode(CodeConstant.REGISTER_FAIL);
@@ -302,7 +311,7 @@ public class UsersWebService extends BaseWebService {
                 userDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
             }
             logger.info("=================掉动态库结束=============返回值getPriPubKey="+getPriPubKey);*/
-            PageData userInfo = userDetailsService.getUserInfoByAccount(account, Constant.VERSION_NO);
+            PageData userInfo = userDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
             SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
             data.put("CSESSIONID", Base64.getBase64(sessionId));
@@ -381,7 +390,7 @@ public class UsersWebService extends BaseWebService {
      */
     @RequestMapping(value="/forgetpwd", method=RequestMethod.POST)
     @ResponseBody
-    public AjaxResponse forgetpwd(HttpServletRequest request, HttpServletResponse response){
+    public AjaxResponse forgetpwd(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         try {
             String account  =request.getParameter("account");
@@ -407,7 +416,7 @@ public class UsersWebService extends BaseWebService {
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            if(StringUtil.isEmpty(passWord)|| StringUtil.isEmpty(cfPassWord)){
+            if(StringUtil.isEmpty(passWord)||StringUtil.isEmpty(cfPassWord)){
                 ar.setSuccess(false);
                 ar.setMessage("密码不能为空!");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
@@ -452,14 +461,14 @@ public class UsersWebService extends BaseWebService {
                 return ar;
             }
             //半小时之内的短信验证码有效
-            String tVcode =sendVodeService.findVcodeByPhone(userInfo.getString("mobile_phone"), Constant.VERSION_NO);
+            String tVcode =sendVodeService.findVcodeByPhone(userInfo.getString("mobile_phone"), Constant.VERSION_NO); 
             if(tVcode ==null||!vcode.trim().equals(tVcode.trim())){
                 ar.setSuccess(false);
                 ar.setMessage("验证码输入不正确！");
                 ar.setErrorCode(CodeConstant.ERROR_VCODE);
                 return ar;
             }
-            if(!userLoginService.modifyPwd(account, MD5Util.getMd5Code(passWord), Constant.VERSION_NO)){
+            if(!userLoginService.modifyPwd(account, MD5Util.getMd5Code(passWord),Constant.VERSION_NO)){         
                 ar.setSuccess(false);
                 ar.setMessage("设置密码失败！");
                 ar.setErrorCode(CodeConstant.UPDATE_FAIL);
@@ -511,7 +520,7 @@ public class UsersWebService extends BaseWebService {
             public Clibrary INSTANCE = (Clibrary) Native.loadLibrary("/data/lib/libbtcsign.so", Clibrary.class);
             //获得公钥和私钥,第一个参数密钥种子为可选项，如果有值，则长度为32
 //            public int GetPriPubKey( String seeds, String prikey, String pubkey, String errmsg);
-            public int GetPriPubKey(byte[] seeds, byte[] prikey, byte[] pubkey, byte[] errmsg);
+            public int GetPriPubKey( byte[] seeds, byte[] prikey, byte[] pubkey, byte[] errmsg);
 
             //获得数据的sign,输入私钥和数据，返回签名
 //            public int GetDataSign( String prikey, String data, String sign, String errmsg);

@@ -11,5 +11,5 @@ public interface SmsBlackService {
      * @throws Exception
      * @return: int
      */
-    public boolean isBlackPhone(String phone, String versionNo) throws Exception;
+    public boolean isBlackPhone(String phone,String versionNo) throws Exception;
 }

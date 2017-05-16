@@ -1,10 +1,10 @@
 package com.ecochain.ledger.service;
 
 
-import com.ecochain.ledger.model.ShopCart;
-
 import java.util.List;
 import java.util.Map;
+
+import com.ecochain.ledger.model.ShopCart;
 
 /**
  * Created by LiShuo on 2016/10/26.
@@ -23,7 +23,7 @@ public interface ShopCartService {
      */
     void batchDelete(List list);
 
-    ShopCart queryCartGoods(String userId, String goodsId, String skuValue);
+    ShopCart queryCartGoods(String userId,String goodsId,String skuValue);
 
     Map<String, Object> serchMyCartGoodsPrice(Integer goodsId);
 
@@ -33,5 +33,5 @@ public interface ShopCartService {
 
     List myCartToGenerateOrder(Map map);
 
-    List queryGoodsDetailInfoByGoodsId(String goodsId, String isPromote);
+    List queryGoodsDetailInfoByGoodsId(String goodsId,String isPromote);
 }

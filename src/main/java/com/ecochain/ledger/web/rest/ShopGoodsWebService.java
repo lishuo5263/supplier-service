@@ -1,6 +1,22 @@
 package com.ecochain.ledger.web.rest;
 
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
@@ -8,18 +24,6 @@ import com.ecochain.ledger.service.ShopGoodsService;
 import com.ecochain.ledger.util.AjaxResponse;
 import com.ecochain.ledger.util.JedisUtil;
 import com.ecochain.ledger.util.RedisConstantUtil;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -27,7 +31,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/api/rest/goods")
-public class ShopGoodsWebService extends BaseAction {
+public class ShopGoodsWebService extends BaseWebService {
 
     @Autowired
     private ShopGoodsService shopGoodsService;

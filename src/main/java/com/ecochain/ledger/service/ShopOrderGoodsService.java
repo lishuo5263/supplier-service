@@ -1,8 +1,8 @@
 package com.ecochain.ledger.service;
 
-import com.ecochain.ledger.model.PageData;
-
 import java.util.Map;
+
+import com.ecochain.ledger.model.PageData;
 
 /**
  * Created by LiShuo on 2016/10/28.
@@ -17,7 +17,7 @@ public interface ShopOrderGoodsService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateLogistics(PageData pd, String versionNo) throws Exception;
+    boolean updateLogistics(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:查询商品关联表
      * @author: zhangchunming
@@ -27,7 +27,7 @@ public interface ShopOrderGoodsService {
      * @throws Exception
      * @return: PageData
      */
-    PageData getOrderGoods(PageData pd, String versionNo) throws Exception;
+    PageData getOrderGoods(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:更新物流状态
      * @author: zhangchunming
@@ -37,7 +37,7 @@ public interface ShopOrderGoodsService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateOrderGoodsStatus(PageData pd, String versionNo) throws Exception;
+    boolean updateOrderGoodsStatus(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:根据hash更新订单商品状态
      * @author: zhangchunming
@@ -47,7 +47,7 @@ public interface ShopOrderGoodsService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateOrderGoodsStatusByHash(PageData pd, String versionNo) throws Exception;
+    boolean updateOrderGoodsStatusByHash(PageData pd,String versionNo) throws Exception;
 
     /**
      * 查询当前用户购买促销商品次数
@@ -55,7 +55,7 @@ public interface ShopOrderGoodsService {
      * @param goodsId
      * @return
      */
-    Integer queryGoodsByCount(Integer userId, Integer goodsId);
+    Integer queryGoodsByCount(Integer userId,Integer goodsId);
 
     /**
      * 查询秒杀模板信息

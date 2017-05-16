@@ -4,17 +4,17 @@ package com.ecochain.ledger.service;
 import com.ecochain.ledger.model.PageData;
 
 public interface UserWalletService {
-    boolean deleteById(Integer id, String versionNo) throws Exception;
+    boolean deleteById(Integer id ,String versionNo) throws Exception;
 
-    boolean insert(PageData pd, String versionNo) throws Exception;
+    boolean insert(PageData pd ,String versionNo) throws Exception;
 
-    boolean insertSelective(PageData pd, String versionNo) throws Exception;
+    boolean insertSelective(PageData pd ,String versionNo) throws Exception;
 
-    PageData selectById(Integer id, String versionNo) throws Exception;
+    PageData selectById(Integer id ,String versionNo) throws Exception;
 
-    boolean updateByIdSelective(PageData pd, String versionNo) throws Exception;
+    boolean updateByIdSelective(PageData pd ,String versionNo) throws Exception;
 
-    boolean updateById(PageData pd, String versionNo) throws Exception;
+    boolean updateById(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:查询钱包账户
      * @author: zhangchunming
@@ -24,7 +24,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    PageData getWalletByUserId(String user_id, String versionNo) throws Exception;
+    PageData getWalletByUserId(String user_id ,String versionNo) throws Exception;
     /**
      * @describe:转账
      * @author: zhangchunming
@@ -34,7 +34,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean transferAccount(PageData pd, String versionNo) throws Exception;
+    boolean transferAccount(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:从钱包减钱（三界宝、三界通、人民币）
      * @author: zhangchunming
@@ -44,7 +44,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateSub(PageData pd, String versionNo) throws Exception;
+    boolean updateSub(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:通过账号从钱包减钱（三界宝、三界通、人民币）
      * @author: zhangchunming
@@ -54,7 +54,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateSubByAccount(PageData pd, String versionNo) throws Exception;
+    boolean updateSubByAccount(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:向钱包加钱（三界宝、三界通、人民币）
      * @author: zhangchunming
@@ -64,7 +64,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean updateAdd(PageData pd, String versionNo) throws Exception;
+    boolean updateAdd(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:通过三界通支付(商城支付)
      * @author: zhangchunming
@@ -74,7 +74,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean payNowBySJT(PageData pd, String versionNo) throws Exception;
+    boolean payNowBySJT(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:店铺爆品支付(通过三界石支付)
      * @author: zhangchunming
@@ -84,7 +84,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean payStoreBySJT(PageData pd, String versionNo) throws Exception;
+    boolean payStoreBySJT(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:通过人民币支付
      * @author: zhangchunming
@@ -94,7 +94,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean payNowByRMB(PageData pd, String versionNo) throws Exception;
+    boolean payNowByRMB(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:确认收货扣除冻结三界通
      * @author: zhangchunming
@@ -104,7 +104,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean payNowByFrozeSJT(PageData pd, String versionNo) throws Exception;
+    boolean payNowByFrozeSJT(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:店铺确认消费扣除冻结人民币
      * @author: zhangchunming
@@ -114,7 +114,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean payNowByFrozeRMB(PageData pd, String versionNo) throws Exception;
+    boolean payNowByFrozeRMB(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:增加冻结金额给供应商
      * @author: zhangchunming
@@ -124,7 +124,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean addFrozeMoneyToSupplier(PageData pd, String versionNo) throws Exception;
+    boolean addFrozeMoneyToSupplier(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:增加冻结三界石给店铺
      * @author: zhangchunming
@@ -134,7 +134,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean addFrozeWlbToStore(PageData pd, String versionNo) throws Exception;
+    boolean addFrozeWlbToStore(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:增加人民币金额给供应商
      * @author: zhangchunming
@@ -144,7 +144,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean addMoneyToSupplier(PageData pd, String versionNo) throws Exception;
+    boolean addMoneyToSupplier(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:会员店铺爆品消费，确认消费给店铺打钱
      * @author: zhangchunming
@@ -154,7 +154,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    boolean addWlbToStore(PageData pd, String versionNo) throws Exception;
+    boolean addWlbToStore(PageData pd ,String versionNo) throws Exception;
     /**
      * @describe:转账中
      * @author: zhangchunming
@@ -164,7 +164,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean transfering(PageData pd, String versionNo) throws Exception;
+    public boolean transfering(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:转账成功
      * @author: zhangchunming
@@ -174,7 +174,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean transferSuccess(PageData pd, String versionNo) throws Exception;
+    public boolean transferSuccess(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:转账失败
      * @author: zhangchunming
@@ -184,7 +184,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean transferfail(PageData pd, String versionNo) throws Exception;
+    public boolean transferfail(PageData pd,String versionNo) throws Exception;
     /**
      * @describe:商城支付時先判断供应商信息是否存在
      * @author: zhangchunming
@@ -194,7 +194,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean isExistSupplierInfo(String shop_order_no, String versionNo) throws Exception;
+    public boolean isExistSupplierInfo(String shop_order_no,String versionNo) throws Exception;
     /**
      * @describe:店铺爆品支付时，先查询店铺钱包信息是否存在
      * @author: zhangchunming
@@ -204,7 +204,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: boolean
      */
-    public boolean isExistStoreInfo(String store_order_sn, String versionNo) throws Exception;
+    public boolean isExistStoreInfo(String store_order_sn,String versionNo) throws Exception;
     /**
      * @describe:根据账号查询钱包
      * @author: zhangchunming
@@ -214,7 +214,7 @@ public interface UserWalletService {
      * @throws Exception
      * @return: PageData
      */
-    public PageData getWalletByAccount(String account, String versionNo) throws Exception;
+    public PageData getWalletByAccount(String account,String versionNo) throws Exception;
     
     /**
      * @describe:三界石兑换人民币

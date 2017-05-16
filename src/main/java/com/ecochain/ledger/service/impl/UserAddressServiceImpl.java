@@ -1,15 +1,17 @@
 package com.ecochain.ledger.service.impl;
 
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.UserAddressService;
-import com.ecochain.ledger.util.StringUtil;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.UserAddressService;
+import com.ecochain.ledger.util.StringUtil;
 
 @Component("userAddressService")
 public class UserAddressServiceImpl implements UserAddressService {

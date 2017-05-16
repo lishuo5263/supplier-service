@@ -1,18 +1,24 @@
 package com.ecochain.ledger.service.impl;
 
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.*;
-import com.ecochain.ledger.util.Logger;
-import com.ecochain.ledger.util.sms.SMSUtil;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.service.AccDetailService;
+import com.ecochain.ledger.service.PayLogService;
+import com.ecochain.ledger.service.PayOrderService;
+import com.ecochain.ledger.service.SysGenCodeService;
+import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.util.Logger;
+import com.ecochain.ledger.util.sms.SMSUtil;
 
 @Component("payOrderService")
 public class PayOrderServiceImpl implements PayOrderService {
@@ -152,7 +158,7 @@ public class PayOrderServiceImpl implements PayOrderService {
 
     @Override
     @Transactional(propagation =Propagation.REQUIRED)
-    public boolean applyWithDrawal(PageData pd, String versionNo) throws Exception {
+    public boolean applyWithDrawal(PageData pd,String versionNo) throws Exception {
         boolean addPayOrderResult = this.insertSelective(pd, Constant.VERSION_NO);
         boolean withDrawalSubMoney = false;
         if(addPayOrderResult){

@@ -1,21 +1,28 @@
 package com.ecochain.ledger.service.impl;
 
 
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.service.AccDetailService;
+import com.ecochain.ledger.service.PayOrderService;
+import com.ecochain.ledger.service.SysGenCodeService;
+import com.ecochain.ledger.service.UsersDetailsService;
+import com.ecochain.ledger.service.UserLoginService;
+import com.ecochain.ledger.service.UserWalletService;
 import com.ecochain.ledger.util.DateUtil;
 import com.ecochain.ledger.util.FormatNum;
 import com.ecochain.ledger.util.Logger;
 import com.ecochain.ledger.util.Validator;
 import com.ecochain.ledger.util.sms.SMSUtil;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 @Component("userWalletService")
 public class UserWalletServiceImpl implements UserWalletService {
@@ -24,7 +31,7 @@ public class UserWalletServiceImpl implements UserWalletService {
     @Resource(name = "daoSupport")
     private DaoSupport dao;
     @Resource
-    private UserDetailsService userDetailsService;
+    private UsersDetailsService userDetailsService;
     @Resource
     private PayOrderService payOrderService;
     @Resource
@@ -123,7 +130,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             accDetail.put("other_source", "转出三界石");
             accDetail.put("operator", pd.getString("operator"));
             if(Validator.isMobile(userInfo.getString("account"))){
-                accDetail.put("remark1", "我转账给"+ FormatNum.convertPhone(userInfo.getString("account")));
+                accDetail.put("remark1", "我转账给"+FormatNum.convertPhone(userInfo.getString("account")));  
             }else{
                 accDetail.put("remark1", "我转账给"+(userInfo.getString("account").length()>10?userInfo.getString("account").substring(0, 10)+"...":userInfo.getString("account")));  
             }
@@ -146,7 +153,7 @@ public class UserWalletServiceImpl implements UserWalletService {
             //获取当前登陆用户的登陆信息
             PageData userLogin = userLoginService.getUserLoginByUserId(String.valueOf(pd.get("user_id")), Constant.VERSION_NO);
             if(Validator.isMobile(userLogin.getString("account"))){
-                accDetail1.put("remark1", FormatNum.convertPhone(userLogin.getString("account"))+"转给我");
+                accDetail1.put("remark1", FormatNum.convertPhone(userLogin.getString("account"))+"转给我");  
             }else{
                 accDetail1.put("remark1", userLogin.getString("account").length()>10?userLogin.getString("account").substring(0, 10)+"...转给我":userLogin.getString("account")+"转给我");  
             }
