@@ -505,4 +505,9 @@ public interface CodeConstant {
 	 * 不可给自己转账
 	 */
 	public final short NOT_TRANSFER_SELF = -115;
+
+	/**
+	 * 数据库无此商品
+	 */
+	public final short ERROR_INFO_NOT_SAME = -116;
 }
