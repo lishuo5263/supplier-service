@@ -1,18 +1,16 @@
 package com.ecochain.ledger.model;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
+import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 public class PageData extends HashMap implements Map{
 	
 	private static final long serialVersionUID = 1L;
 	
+	
+    
 	Map map = null;
 	HttpServletRequest request;
 	
@@ -27,11 +25,11 @@ public class PageData extends HashMap implements Map{
 		Map properties = request.getParameterMap();
 		Map returnMap = new HashMap(); 
 		Iterator entries = properties.entrySet().iterator(); 
-		Map.Entry entry; 
-		String name = "";  
-		String value = "";  
+		Entry entry;
+		String name = "";
+		String value = "";
 		while (entries.hasNext()) {
-			entry = (Map.Entry) entries.next(); 
+			entry = (Entry) entries.next();
 			name = (String) entry.getKey(); 
 			Object valueObj = entry.getValue(); 
 			if(null == valueObj){ 
@@ -45,7 +43,14 @@ public class PageData extends HashMap implements Map{
 			}else{
 				value = valueObj.toString(); 
 			}
-			returnMap.put(name, value); 
+			if("page".equalsIgnoreCase(name)){
+			    setPage(Integer.valueOf(value));
+			}else if("rows".equalsIgnoreCase(name)){
+			    setRows(Integer.valueOf(value));
+			}else{
+			    returnMap.put(name, value); 
+			}
+			
 		}
 		map = returnMap;
 	}
@@ -126,4 +131,40 @@ public class PageData extends HashMap implements Map{
 		return map.values();
 	}
 	
+	
+	
+	@Id
+    @Column(name = "Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Transient
+    private Integer page = 1;
+
+    @Transient
+    private Integer rows = 10;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
 }

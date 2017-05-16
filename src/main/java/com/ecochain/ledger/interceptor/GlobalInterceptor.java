@@ -1,11 +1,11 @@
-/*package com.ecochain.ledger.interceptor;
+package com.ecochain.ledger.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.util.*;
+import com.qkl.util.help.annotation.LoginVerify;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,14 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 public class GlobalInterceptor implements HandlerInterceptor{
 
 	private static Logger log = Logger.getLogger(GlobalInterceptor.class);
-	@Autowired
-    private CacheManager cacheManager;
-	@Autowired
-	private SessionUtil sessionUtil;
+	/*@Autowired
+    private CacheManager cacheManager;*/
 	@Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
-		
+	    response.setCharacterEncoding("utf-8");
 //		String versioncode = request.getParameter("versioncode");
 		String platform = request.getParameter("platform");
 		String code = request.getParameter("code");
@@ -58,7 +56,7 @@ public class GlobalInterceptor implements HandlerInterceptor{
     				LoginVerify loginVerify = method.getMethod().getAnnotation(LoginVerify.class);
     				if(loginVerify != null){
     				    String user = null;
-    				    user = sessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+    				    user = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
     					if(StringUtil.isEmpty(user)){
     					    ar.setErrorCode(CodeConstant.UNLOGIN);
                             ar.setMessage("未登录");
@@ -69,7 +67,7 @@ public class GlobalInterceptor implements HandlerInterceptor{
     					}
     				}
     				String user = null;
-                    user = sessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+                    user = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
                     if(StringUtil.isEmpty(user)){
                         ar.setErrorCode(CodeConstant.UNLOGIN);
                         ar.setMessage("未登录");
@@ -97,4 +95,3 @@ public class GlobalInterceptor implements HandlerInterceptor{
 	}
 
 }
-*/
