@@ -522,7 +522,9 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean payNow(PageData pd, String versionNo) throws Exception {
+        
         logger.info("-------------商城支付-----------start------------");
+        pd.put("bussTyte", "payNow");//添加业务类型
         //从账户余额扣钱到冻结余额中
         if(userWalletService.payNowBySJT(pd, Constant.VERSION_NO)){
             /*//修改订单状态为已支付
@@ -567,6 +569,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             accDetail.put("create_time", DateUtil.getCurrDateTime());
             pd.put("create_time", DateUtil.getCurrDateTime());//进区块链
             pd.put("order_status", "2");//进区块链
+            
             
             /*logger.info("====================生产掉动态库代码========start================");
             String seedsStr = pd.getString("seeds");
