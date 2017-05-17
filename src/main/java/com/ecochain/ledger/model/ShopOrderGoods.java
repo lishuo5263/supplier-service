@@ -26,6 +26,8 @@ public class ShopOrderGoods implements Serializable {
 
     private String isPromote; //是否火爆商品 1是 0否
 
+    private String tradeHash;
+
     private String consignee;
 
     private String zipCode;
@@ -451,6 +453,14 @@ public class ShopOrderGoods implements Serializable {
 
     public void setIsPromote(String isPromote) {
         this.isPromote = isPromote;
+    }
+
+    public String getTradeHash() {
+        return tradeHash;
+    }
+
+    public void setTradeHash(String tradeHash) {
+        this.tradeHash = tradeHash;
     }
 
     public Integer getIsMutilPrice() {

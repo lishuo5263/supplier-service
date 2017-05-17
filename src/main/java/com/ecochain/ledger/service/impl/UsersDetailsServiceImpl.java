@@ -1,13 +1,10 @@
 package com.ecochain.ledger.service.impl;
 
 import java.util.List;
-
 import javax.annotation.Resource;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
@@ -15,6 +12,11 @@ import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.Logger;
 import com.github.pagehelper.PageHelper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import javax.annotation.Resource;
+import java.util.List;
 
 @Service("userDetailsService")
 public class UsersDetailsServiceImpl implements UsersDetailsService{
@@ -35,19 +37,19 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
 
     @Override
     public PageData getUserInfoByUserId(Integer user_id, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("UsersDetailsMapper.getUserInfoByUserId", user_id);
+        return (PageData) dao.findForObject("com.ecochain.ledger.mapper.UsersDetailsMapper.getUserInfoByUserId", user_id);
     }
 
     @Override
     public boolean findIsExist(String account, String versionNo) throws Exception {
-        return (Integer)dao.findForObject("UsersDetailsMapper.findIsExist", account)>0;
+        return (Integer)dao.findForObject("com.ecochain.ledger.mapper.UsersDetailsMapper.findIsExist", account)>0;
     }
 
     @Override
     @Transactional(propagation =Propagation.REQUIRED)
     public boolean addUser(PageData pd, String versionNo) throws Exception {
         //添加用户详细表
-        dao.save("UsersDetailsMapper.insertSelective", pd);
+        dao.save("com.ecochain.ledger.mapper.UsersDetailsMapper.insertSelective", pd);
         //添加用户登陆表
         dao.save("UserLoginMapper.insertSelective", pd);
         
@@ -108,12 +110,12 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
 
     @Override
     public Integer getUserCount() throws Exception {
-        return (Integer)dao.findForObject("UsersDetailsMapper.getUserCount", null);
+        return (Integer)dao.findForObject("com.ecochain.ledger.mapper.UsersDetailsMapper.getUserCount", null);
     }
 
     @Override
     public PageData getUserInfoByAccount(String account, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("UsersDetailsMapper.getUserInfoByAccount", account);
+        return (PageData) dao.findForObject("com.ecochain.ledger.mapper.UsersDetailsMapper.getUserInfoByAccount", account);
     }
     
     public PageData findAcceptInfo(PageData pd) throws Exception {
@@ -122,7 +124,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
 
     @Override
     public boolean updateByIdSelective(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("UsersDetailsMapper.updateByIdSelective", pd)>0;
+        return (Integer)dao.update("com.ecochain.ledger.mapper.UsersDetailsMapper.updateByIdSelective", pd)>0;
     }
 
     @Override
@@ -133,7 +135,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
 
     @Override
     public boolean modifyPhone(PageData pd, String versionNo) throws Exception {
-        return (Integer)dao.update("UsersDetailsMapper.modifyPhone", pd)>0;
+        return (Integer)dao.update("com.ecochain.ledger.mapper.UsersDetailsMapper.modifyPhone", pd)>0;
     }
 
     @Override
@@ -141,7 +143,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         if (pd.getPage() != null && pd.getRows() != null) {
             PageHelper.startPage(pd.getPage(), pd.getRows());
         }
-        List<PageData> list = (List<PageData>)dao.findForList("UsersDetailsMapper.listPageUsers", pd);
+        List<PageData> list = (List<PageData>)dao.findForList("com.ecochain.ledger.mapper.UsersDetailsMapper.listPageUsers", pd);
         return list;
     }
 }
