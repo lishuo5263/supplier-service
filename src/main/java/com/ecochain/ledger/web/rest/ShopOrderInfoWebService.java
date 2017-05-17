@@ -6,29 +6,22 @@ import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.constants.CookieConstant;
-import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.*;
+import com.ecochain.ledger.util.Base64;
 import com.github.pagehelper.PageInfo;
-
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -140,7 +133,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
             "        \"goodsId\":\"1120\",\n" +
             "        \"skuValue\":\"lstextlslsls\",\n" +
             "        \"payPrice\":\"100\",\n" +
-            "        \"csessionid\":\"4c7cb3c15bfd471a98b9a42e1cfa6791\",\n" +
+            "        \"csessionid\":\"ZGU5YTExZDE0NTUxNDk1Njg0MTU0ODUzYzJlMDI2NTk=\",\n" +
             "\"isPromote\":\"0\",\"skuInfo\":\"{\\\"颜色\\\":\\\"黑色\\\",\\\"规格\\\":\\\"个\\\",\\\"数量\\\":1,\\\"重量\\\":\\\"100g\\\"}\"\n" +
             "    }", required = true, paramType = "body", dataType = "BlogArticleBeen")
     public synchronized AjaxResponse insertShopOrder(@RequestBody String shopOrderGoods, HttpServletRequest request) throws Exception {
@@ -151,12 +144,12 @@ public class ShopOrderInfoWebService extends BaseWebService {
             JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, ShopOrderGoods.class);
             objectMapper.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             shopOrderGood = objectMapper.readValue(shopOrderGoods, javaType);
-            /*String userstr = SessionUtil.getAttibuteForUser(Base64.getFromBase64(shopOrderGood.get(0).getCsessionid()));
+            String userstr = SessionUtil.getAttibuteForUser(Base64.getFromBase64(shopOrderGood.get(0).getCsessionid()));
             JSONObject user = JSONObject.parseObject(userstr);
             if(user == null || !user.containsKey("seeds")){
                 return fastReturn(null, false, "下单失败，登录超时，请重新登陆！", CodeConstant.UNLOGIN);
             }
-            logger.info("sessionKey中用户信息------------>"+user.toJSONString());*/
+            logger.info("sessionKey中用户信息------------>"+user.toJSONString());
             if (!StringUtil.isNotEmpty(String.valueOf(shopOrderGood.get(0).getUserId()))) {
                 return fastReturn(null, false, "订单生成失败，userId参数为空！", CodeConstant.PARAM_ERROR);
             } else if (!StringUtil.isNotEmpty(String.valueOf(shopOrderGood.get(0).getAddressId()))) {
@@ -189,9 +182,11 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     List<Map<String, Object>> result = new ArrayList();
                     shopOrderGood.get(0).setOrderNo(OrderGenerater.generateOrderNo(shopOrderGood.get(0).getUserCode()));
                     shopOrderGood.get(0).setOrderStatus(1);
+                    shopOrderGood.get(0).setUserId(Integer.valueOf(user.getString("id")));
                     shopOrderGood.get(0).setShippingFee(new BigDecimal(0));
                     shopOrderGood.get(0).setIntegralMoney(new BigDecimal(0));
-                    //shopOrderGood.get(0).setTradeHash(user.getString("seeds"));
+                    shopOrderGood.get(0).setTradeHash(user.getString("seeds"));
+                    shopOrderGood.get(0).setData(new StringBuffer(shopOrderGoods.substring(0,shopOrderGoods.length()-1)).append(",\"bussType\":\"insertOrder\"}").toString());
                     result = this.shopOrderInfoService.insertShopOrder(shopOrderGood);
                     if (result.get(0).get("ErrorInsert") != null) {
                         return fastReturn(result, false, "订单生成失败，goodsId参数为空！", CodeConstant.PARAM_ERROR);
@@ -945,7 +940,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 }
             }
             data.put("shopOrderList", shopOrderList);*/
-            
+
             List<PageData> shopOrderList = shopOrderInfoService.listShopOrderByPage(pd);//查询所有订单
             if (shopOrderList != null && shopOrderList.size()>0) {
                     List<String> orderIdList = new ArrayList<String>();
@@ -1326,7 +1321,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
     }
 */
     //@LoginVerify
-    @RequestMapping(value = "/deliverGoods", method = RequestMethod.POST)
+    @RequestMapping(value = "/deliverGoods", method = RequestMethod.GET)
     @ApiOperation(nickname = "deliverGoods", value = "物流确认发货", notes = "物流确认发货！！")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shop_order_no", value = "订单号", required = true, paramType = "query", dataType = "String"),
@@ -1383,6 +1378,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
             pd.put("createtime",new Date());
             pd.put("logistics_code", pd.getString("logistics_no").toLowerCase());
             pd.put("state", "3");//发货
+            pd.put("bussType","deliverGoods");
             boolean deliverGoods = shopOrderInfoService.deliverGoods(pd, Constant.VERSION_NO);
             if (deliverGoods) {
                 ar.setSuccess(true);

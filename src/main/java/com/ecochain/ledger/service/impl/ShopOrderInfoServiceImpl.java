@@ -1,14 +1,16 @@
 package com.ecochain.ledger.service.impl;
 
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.mapper.*;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.model.ShopGoods;
+import com.ecochain.ledger.model.ShopOrderGoods;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.DateUtil;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,26 +19,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.mapper.ShopCartMapper;
-import com.ecochain.ledger.mapper.ShopGoodsMapper;
-import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
-import com.ecochain.ledger.mapper.ShopOrderInfoMapper;
-import com.ecochain.ledger.mapper.UsersDetailsMapper;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.model.ShopGoods;
-import com.ecochain.ledger.model.ShopOrderGoods;
-import com.ecochain.ledger.service.AccDetailService;
-import com.ecochain.ledger.service.PayOrderService;
-import com.ecochain.ledger.service.ShopOrderGoodsService;
-import com.ecochain.ledger.service.ShopOrderInfoService;
-import com.ecochain.ledger.service.ShopOrderLogisticsService;
-import com.ecochain.ledger.service.UserAddressService;
-import com.ecochain.ledger.service.UserWalletService;
-import com.ecochain.ledger.util.DateUtil;
-import com.github.pagehelper.PageHelper;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component("shopOrderInfoService")
 public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
@@ -212,6 +200,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Map<String, Object>> insertShopOrder(List<ShopOrderGoods> shopOrderGoods) throws Exception {
         // 先查询用户类型再去shop_goods 取最终商品价格，shopOrderGoods记录当时购买价格，ShopOrderInfo order_amount 计算总订单价格
+        logger.info("------------------------------>传递给区块链data值为："+shopOrderGoods.get(0).getData());
         ShopGoods shopGoods = null;
         List<Map<String, Object>> result = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -249,7 +238,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
                 return result;
             }
         }*/
-        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods);//此时TradeHash值为seeds
+        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods.get(0).getData());//此时TradeHash值为seeds
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             shopOrderGoods.get(0).setTradeHash(json.getString("result"));
@@ -471,7 +460,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deliverGoods(PageData pd, String versionNo) throws Exception {
-        /*String tradeResult=qklLibService.sendDataToSys(pd.get("seeds"), pd.toString());
+        /*String tradeResult=qklLibService.sendDataToSys(pd.get("seeds"), JSONObject.toJSON(pd.toString()););
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             pd.put("logistics_hash",json.getString("result"));
