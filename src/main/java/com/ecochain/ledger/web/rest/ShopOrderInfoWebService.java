@@ -1337,9 +1337,9 @@ public class ShopOrderInfoWebService extends BaseWebService {
             String userstr = SessionUtil.getAttibuteForUser(key);*/
 
 
-            /*String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             logger.info("sessionKey中用户信息------------>"+userstr);
-            JSONObject user = JSONObject.parseObject(userstr);*/
+            JSONObject user = JSONObject.parseObject(userstr);
             PageData pd = new PageData();
             pd = this.getPageData();
             if (StringUtil.isEmpty(pd.getString("shop_order_no"))) {

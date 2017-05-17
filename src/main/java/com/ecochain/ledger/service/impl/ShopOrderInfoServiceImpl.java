@@ -1,6 +1,8 @@
 package com.ecochain.ledger.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.mapper.*;
@@ -10,6 +12,7 @@ import com.ecochain.ledger.model.ShopGoods;
 import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.StringUtil;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -61,6 +64,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     private UserAddressService userAddressService;
     @Autowired
     private PayOrderService payOrderService;
+    @Autowired
+    private QklLibService qklLibService;
 
     @Override
     public boolean updateOrderRefundStatus(String orderNo) {
@@ -235,10 +240,10 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             if(usersType > 2){ //2以上类型的用户不可下单
                 map.put("ErrorInsertNotAllowByUsersType","抱歉，当前账户没有购买此商品的权限，只有普通会员/创业会员才能购买哦！");
                 result.add(map);
-                return result;
+                return result;q
             }
         }*/
-        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods.get(0).getData());//此时TradeHash值为seeds
+        String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods.get(0).getData());//此时TradeHash值为seeds
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             shopOrderGoods.get(0).setTradeHash(json.getString("result"));
@@ -246,7 +251,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             map.put("ErrorInsertByBlockChain","订单生成失败，调用区块链接口发生错误！");
             result.add(map);
             return result;
-        }*/
+        }
         if ("0".equals(shopOrderGoods.get(0).getIsPromote())) { //商城普通订单
             for (int i = 0; i < shopOrderGoods.size(); i++) {
                 if (StringUtils.isNotEmpty(String.valueOf(shopOrderGoods.get(i).getGoodsId()))) {
@@ -460,11 +465,11 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deliverGoods(PageData pd, String versionNo) throws Exception {
-        /*String tradeResult=qklLibService.sendDataToSys(pd.get("seeds"), JSONObject.toJSON(pd.toString()););
+        String tradeResult=qklLibService.sendDataToSys(pd.getString("seeds"), JSONObject.toJSON(pd.toString()));
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             pd.put("logistics_hash",json.getString("result"));
-        }*/
+        }
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
         //修改订单商品关联表信息（添加物流单号及修改发货状态）
