@@ -17,13 +17,15 @@ import com.ecochain.ledger.util.Logger;
 import com.ecochain.ledger.util.StringUtil;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+
 @Component("qklLibService")
 public class QklLibServiceImpl implements QklLibService {
 
     private final Logger logger = Logger.getLogger(QklLibServiceImpl.class);
+    
     @Autowired
     private  SysGenCodeService sysGenCodeService;
-    
+
     @Override
     public PageData getPriPubKey(String seedsStr) throws Exception {
         byte[] seedsByte = seedsStr.getBytes();
@@ -195,5 +197,6 @@ public class QklLibServiceImpl implements QklLibService {
           public void InitCrypt();
           public void StopCrypt();
   }
-
+    
+    
 }

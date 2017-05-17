@@ -1,5 +1,10 @@
 package com.ecochain.ledger.web.rest;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,10 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -41,8 +48,9 @@ import com.sun.jna.Native;
 /*
  * 总入口
  */
-@Controller
+@RestController
 @RequestMapping(value = "/api/user")
+@Api(value = "用户Service")
 public class UsersWebService extends BaseWebService {
 
     @Autowired
@@ -132,8 +140,12 @@ public class UsersWebService extends BaseWebService {
 	/**
 	 * 请求登录，验证用户
 	 */
-	@RequestMapping(value="/login", method=RequestMethod.POST)
-	@ResponseBody
+	@PostMapping("/login")
+	@ApiOperation(nickname = "登陆接口", value = "用户登陆", notes = "用户登陆！")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "path", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "path", dataType = "String")
+	})
 	public AjaxResponse login(HttpServletRequest request,HttpServletResponse response){
 	    AjaxResponse ar = new AjaxResponse();
 		Map<String,Object> data  = new HashMap<String,Object>();
@@ -201,8 +213,12 @@ public class UsersWebService extends BaseWebService {
      * @param response
      * @return: AjaxResponse
      */
-    @RequestMapping(value="/register", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping("/register")
+    @ApiOperation(nickname = "用户注册", value = "用户注册", notes = "用户注册")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "account", value = "登陆账号，仅支持手机号注册", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "密码，6-16位数字", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse register(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data  = new HashMap<String,Object>();
@@ -212,40 +228,39 @@ public class UsersWebService extends BaseWebService {
             logger.info("--------------register  pd value is "+pd.toString());
             String account = StringUtil.isEmpty(pd.getString("account"))?null:pd.getString("account").trim();
             String password = StringUtil.isEmpty(pd.getString("password"))?null:pd.getString("password").trim();
-            String mail = StringUtil.isEmpty(pd.getString("mail"))?null:pd.getString("mail").trim();
             if(StringUtil.isEmpty(account)){
                 ar.setSuccess(false);
-                ar.setMessage("请输入用户名！");
+                ar.setMessage("请输入登陆账号！");
                 ar.setErrorCode(CodeConstant.USER_NO_EXISTS);
                 return ar;
             }
-            if(!Validator.isAccountByLetterAndNum(account)){
+            if(!Validator.isMobile(account)){
+                ar.setSuccess(false);
+                ar.setMessage("账号格式不正确！");
+                ar.setErrorCode(CodeConstant.MOBILE_ERROR);
+                return ar;
+            }
+            /*if(!Validator.isAccountByLetterAndNum(account)){
                 ar.setSuccess(false);
                 ar.setMessage("用户名应包含字母和数字哦，请重新设置！");
                 ar.setErrorCode(CodeConstant.ERROE_PASSWORD_LETTER_NUM);
                 return ar;
-            }
-            if(StringUtil.isEmpty(mail)){
-                ar.setSuccess(false);
-                ar.setMessage("请输入邮箱！");
-                ar.setErrorCode(CodeConstant.MAIL_NULL);
-                return ar;
-            }
+            }*/
             if(StringUtil.isEmpty(password)){
                 ar.setSuccess(false);
                 ar.setMessage("请输入密码！");
                 ar.setErrorCode(CodeConstant.ERROE_PASSWORD_NULL);
                 return ar;
             }
-            password = MD5Util.getMd5Code(password);
-            /*if(password.length()<6||password.length()>16){
+            
+            if(password.length()<6||password.length()>16){
                 ar.setSuccess(false);
                 ar.setMessage("密码应为6-16位数，请重新设置");
                 ar.setErrorCode(CodeConstant.ERROE_PASSWORD_6_16);
                 return ar;
-            }*/
+            }
             
-            
+            password = MD5Util.getMd5Code(password);
             //判断用户是否已存在
             if(userDetailsService.findIsExist(account,Constant.VERSION_NO)){
                 ar.setSuccess(false);
@@ -253,7 +268,6 @@ public class UsersWebService extends BaseWebService {
                 ar.setErrorCode(CodeConstant.ACCOUNT_EXISTS);
                 return ar;
             }
-            pd.put("role_id", "2");
             pd.put("account", account);
             pd.put("status", "1");//会员状态默认启用
             pd.put("password", password);
@@ -273,49 +287,10 @@ public class UsersWebService extends BaseWebService {
                 return ar;
             }
             
-            /*StringBuffer buf = new StringBuffer();
-            while(buf.length()<32){
-                buf.append(pd.get("user_id")+pd.getString("account"));
-            }
-            char[] seeds = buf.substring(0, 32).toCharArray();
-            char[] pubkey = new char[64];
-            char[] prikey = new char[64];
-            char[] errmsg = new char[64];
-            String seedsStr = buf.substring(0, 32)+"\0";
-            byte[] seedsByte = seedsStr.getBytes();
-            byte[] pubkeyByte = new byte[64];
-            byte[] prikeyByte = new byte[64];
-            byte[] errmsgByte = new byte[64];
-            
-            String pubkey = "";
-            String prikey = "";
-            String errmsg = "";
-//            System.setProperty("jna.encoding", "UTF-8");
-//            int getPriPubKey = 11;
-            logger.info("=================掉动态库开始========================");
-            System.out.println("运行结果："+Clibrary.INSTANCE.TestLib(1,2,'+'));
-            logger.info("=================动态库测试========================");
-            Clibrary.INSTANCE.InitCrypt();
-            int getPriPubKey = Clibrary.INSTANCE.GetPriPubKey(seedsByte,pubkeyByte,prikeyByte,errmsgByte);
-            pubkey = new String(pubkeyByte);
-            prikey = new String(prikeyByte);
-            errmsg = new String(errmsgByte);
-            Clibrary.INSTANCE.StopCrypt();
-            if(getPriPubKey==0){
-                System.out.println("pubkey="+pubkey+",prikey="+prikey+",errmsg="+errmsg);
-                pd.put("seeds", seedsStr);
-                pd.put("public_key", pubkey.toString());
-                pd.put("address", pubkey.toString());
-                pd.put("id", pd.get("user_id"));
-                logger.info("调动态库pd value="+pd.toString());
-                userDetailsService.updateByIdSelective(pd, Constant.VERSION_NO);
-            }
-            logger.info("=================掉动态库结束=============返回值getPriPubKey="+getPriPubKey);*/
             PageData userInfo = userDetailsService.getUserInfoByAccount(account,Constant.VERSION_NO);
             String sessionId = RequestUtils.getRequestValue(CookieConstant.CSESSIONID,request);
             SessionUtil.setAttributeForUser(sessionId, JSON.toJSONString(userInfo));
             data.put("CSESSIONID", Base64.getBase64(sessionId));
-            data.put("role_id", pd.getString("role_id"));
             ar.setData(data);
             ar.setSuccess(true);
             ar.setMessage("注册成功！");
@@ -370,8 +345,11 @@ public class UsersWebService extends BaseWebService {
      * @param request
      * @return
      */
-    @RequestMapping(value="/logout")
-    @ResponseBody
+    @PostMapping(value="/logout")
+    @ApiOperation(nickname = "退出登陆", value = "退出登陆", notes = "退出登陆！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "登陆token", required = true, paramType = "path", dataType = "String")
+    })
     public AjaxResponse logout(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
         SessionUtil.delAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
@@ -388,8 +366,14 @@ public class UsersWebService extends BaseWebService {
      * @param response
      * @return: AjaxResponse
      */
-    @RequestMapping(value="/forgetpwd", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping("/forgetpwd")
+    @ApiOperation(nickname = "忘记密码", value = "忘记密码，输入新密码", notes = "忘记密码，输入新密码！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "path", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "新密码", required = true, paramType = "path", dataType = "String"),
+        @ApiImplicitParam(name = "cfPassWord", value = "确认密码", required = true, paramType = "path", dataType = "String"),
+        @ApiImplicitParam(name = "vcode", value = "验证码", required = true, paramType = "path", dataType = "String")
+    })
     public AjaxResponse forgetpwd(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();
         try {

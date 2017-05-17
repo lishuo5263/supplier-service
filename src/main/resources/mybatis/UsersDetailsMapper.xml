@@ -357,4 +357,7 @@
   <select id="listPageUsers" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
       select * from users_details 
   </select>
+  <select id="getUserInfoByAccount" parameterType="java.lang.String" resultType="com.ecochain.ledger.model.PageData">
+      select a.*,b.account from users_details a ,user_login b where a.id = b.user_id and b.account = #{account}
+  </select>
 </mapper>

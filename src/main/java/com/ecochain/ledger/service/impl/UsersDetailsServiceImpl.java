@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.UsersDetailsService;
+import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.Logger;
-import com.ecochain.ledger.util.StringUtil;
-import com.ecochain.ledger.web.rest.UsersWebService.Clibrary;
 import com.github.pagehelper.PageHelper;
 
 @Service("userDetailsService")
@@ -51,12 +51,14 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         //添加用户登陆表
         dao.save("UserLoginMapper.insertSelective", pd);
         
-        StringBuffer buf = new StringBuffer();
+        
+        /*StringBuffer buf = new StringBuffer();
         while(buf.length()<32){
             buf.append(pd.get("user_id")+pd.getString("account"));
         }
         String seedsStr = buf.substring(0, 32)+"\0";
         logger.info("seeds="+seedsStr);
+        
         byte[] seedsByte = seedsStr.getBytes();
         byte[] pubkeyByte = new byte[64];
         byte[] prikeyByte = new byte[64];
@@ -65,6 +67,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         String pubkey = "";
         String prikey = "";
         String errmsg = "";
+        
         logger.info("=================掉动态库开始========================");
         Clibrary.INSTANCE.InitCrypt();
         int getPriPubKey = Clibrary.INSTANCE.GetPriPubKey(seedsByte,pubkeyByte,prikeyByte,errmsgByte);
@@ -78,14 +81,27 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         if(getPriPubKey==0&&"success".equals(errmsg)){
             PageData tpd = new PageData();
             tpd.put("seeds", seedsStr);
-            tpd.put("public_key", pubkey.trim());
-            tpd.put("address", pubkey.trim());
+            tpd.put("public_key", pubkey.toString());
+            tpd.put("address", pubkey.toString());
             tpd.put("id", pd.get("user_id"));
             logger.info("调动态库tpd value="+tpd.toString());
-            updateByIdSelective(tpd, versionNo);
+            usersDetailsService.updateByIdSelective(tpd, versionNo);
         }else{
             throw new RuntimeException("===================掉动态库失败================================");
-        }
+        }*/
+        /*logger.info("创建用户结束**************************end**************************");
+        
+        logger.info("====================测试代码========start================");
+        String jsonStr = HttpUtil.sendPostData("http://192.168.200.108:8332/get_new_key", "");
+        JSONObject jsonObj = JSONObject.parseObject(jsonStr);
+        PageData tpd = new PageData();
+        tpd.put("seeds", seedsStr);
+        tpd.put("public_key", jsonObj.getJSONObject("result").getString("publicKey"));
+        tpd.put("address", jsonObj.getJSONObject("result").getString("publicKey"));
+        tpd.put("id", pd.get("user_id"));
+        logger.info("调动态库tpd value="+tpd.toString());
+        this.updateByIdSelective(tpd, versionNo);
+        logger.info("====================测试代码========end================");*/
         
         return true;
     }
