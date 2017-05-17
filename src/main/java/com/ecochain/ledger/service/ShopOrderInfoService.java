@@ -434,4 +434,12 @@ public interface ShopOrderInfoService {
      * @return: String
      */
     String querySimpleGoodsInfo(String orderNum);
+
+    /**
+     * @describe:根据订单号查询商品简要信息
+     * @author: Lisandro
+     * @date: 2017年5月2日14:53:36
+     * @return: String
+     */
+    Integer queryOrderNum(String orderNum);
 }
