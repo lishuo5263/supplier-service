@@ -174,7 +174,7 @@
         address = #{address,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id}
   </update>
   <update id="updateById" parameterType="com.ecochain.ledger.model.PageData" >
     update users_details

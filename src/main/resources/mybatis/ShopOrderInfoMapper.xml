@@ -372,10 +372,10 @@
       and   a.user_id = #{user_id}
       and   a.order_status not in('4','9')
     </if>
-    <if test="user_type == 6 " >
+    <if test="user_type != null and user_type == 6 " >
       and   a.shipping_name = '国内物流'
     </if>
-    <if test="user_type == 7 " >
+    <if test="user_type != null and user_type == 7 " >
       and   a.shipping_name = '境外物流'
     </if>
     group by a.order_id
@@ -768,5 +768,32 @@
 	    and a.order_id = #{order_id}
 	    and a.user_id = #{user_id}
 	    and b.state = '3'
+  </update>
+  <update id="updateOrderHashByOrderNo" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info 
+    <set >
+      <if test="trade_hash != null" >
+        trade_hash =  #{trade_hash} ,
+      </if>
+      <if test="order_status != null" >
+        order_status = #{order_status}
+      </if>
+    </set>
+    where order_no = #{order_no}
+  </update>
+  <update id="updateShopOrderStatusByHash" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info 
+    set order_status = #{order_status},
+    pay_time = #{pay_time}
+    WHERE trade_hash  in
+    <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+          #{item}   
+    </foreach> 
+  </update>
+  <update id="lockOrderByOrderNo" parameterType="com.ecochain.ledger.model.PageData">
+     update shop_order_info set is_lock = '1' where order_no = #{order_no}
+  </update>
+  <update id="unLockOrderByOrderNo" parameterType="com.ecochain.ledger.model.PageData">
+     update shop_order_info set is_lock = '0' where order_no = #{order_no}
   </update>
 </mapper>

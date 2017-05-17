@@ -235,4 +235,13 @@
       and a.goods_id = b.goods_id
       and a.shop_order_no = #{shop_order_no} limit 0,1
   </select>
+  <update id="updateOrderGoodsStatusByHash" parameterType="com.ecochain.ledger.model.Page">
+    update shop_order_goods a,shop_order_info b set a.state = #{state} 
+    where 1=1
+    and a.shop_order_no = b.order_no 
+    and b.trade_hash in
+    <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+          #{item}   
+    </foreach> 
+  </update>
 </mapper>

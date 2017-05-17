@@ -54,14 +54,14 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         dao.save("UserLoginMapper.insertSelective", pd);
         
         
-        /*StringBuffer buf = new StringBuffer();
+        StringBuffer buf = new StringBuffer();
         while(buf.length()<32){
             buf.append(pd.get("user_id")+pd.getString("account"));
         }
         String seedsStr = buf.substring(0, 32)+"\0";
         logger.info("seeds="+seedsStr);
         
-        byte[] seedsByte = seedsStr.getBytes();
+        /*byte[] seedsByte = seedsStr.getBytes();
         byte[] pubkeyByte = new byte[64];
         byte[] prikeyByte = new byte[64];
         byte[] errmsgByte = new byte[64];
@@ -91,10 +91,10 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         }else{
             throw new RuntimeException("===================掉动态库失败================================");
         }*/
-        /*logger.info("创建用户结束**************************end**************************");
+        logger.info("创建用户结束**************************end**************************");
         
         logger.info("====================测试代码========start================");
-        String jsonStr = HttpUtil.sendPostData("http://192.168.200.108:8332/get_new_key", "");
+        String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
         JSONObject jsonObj = JSONObject.parseObject(jsonStr);
         PageData tpd = new PageData();
         tpd.put("seeds", seedsStr);
@@ -103,7 +103,7 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         tpd.put("id", pd.get("user_id"));
         logger.info("调动态库tpd value="+tpd.toString());
         this.updateByIdSelective(tpd, versionNo);
-        logger.info("====================测试代码========end================");*/
+        logger.info("====================测试代码========end================");
         
         return true;
     }

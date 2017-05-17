@@ -1,22 +1,15 @@
 package com.ecochain.ledger.web.rest;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ecochain.ledger.annotation.LoginVerify;
-import com.ecochain.ledger.base.BaseWebService;
-import com.ecochain.ledger.constants.CodeConstant;
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.constants.CookieConstant;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.model.ShopOrderGoods;
-import com.ecochain.ledger.service.*;
-import com.ecochain.ledger.util.*;
-import com.github.pagehelper.PageInfo;
-
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
@@ -26,11 +19,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.math.BigDecimal;
-import java.util.*;
+import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.annotation.LoginVerify;
+import com.ecochain.ledger.base.BaseWebService;
+import com.ecochain.ledger.constants.CodeConstant;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.constants.CookieConstant;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.model.ShopOrderGoods;
+import com.ecochain.ledger.service.ShopGoodsService;
+import com.ecochain.ledger.service.ShopOrderGoodsService;
+import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.ShopSupplierService;
+import com.ecochain.ledger.service.SysGenCodeService;
+import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.util.AjaxResponse;
+import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.OrderGenerater;
+import com.ecochain.ledger.util.RequestUtils;
+import com.ecochain.ledger.util.SessionUtil;
+import com.ecochain.ledger.util.StringUtil;
+import com.github.pagehelper.PageInfo;
 
 /**
  * Created by LiShuo on 2016/10/28.
@@ -909,42 +918,6 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 pd.put("user_id", String.valueOf(user.get("id")));
                 pd.put("user_type", String.valueOf(user.getString("user_type")));
             }
-            /*page.setPd(pd);
-            PageData shopOrderPD = shopOrderInfoService.listShopOrderByPage(page, Constant.VERSION_NO);//查询所有订单
-            List<PageData> shopOrderList = null;
-            if (shopOrderPD != null) {
-                page = (Page) shopOrderPD.get("page");
-                page.setPd(null);
-                shopOrderList = (List<PageData>) shopOrderPD.get("list");
-                if (shopOrderList != null && shopOrderList.size() > 0) {
-                    List<String> orderIdList = new ArrayList<String>();
-                    for (PageData shopOrder : shopOrderList) {
-                        orderIdList.add(String.valueOf(shopOrder.get("order_id")));
-                    }
-                    PageData shopOrder = new PageData();
-                    if ("4".equals(user.getString("user_type"))) {//供应商
-//                        shopOrder.put("supplierIdList", supplierIdList);
-                        shopOrder.put("supplier_id", String.valueOf(oneSupplier.get("id")));
-                    } else {
-                        shopOrder.put("user_id", String.valueOf(user.get("id")));
-                    }
-                    shopOrder.put("orderIdList", orderIdList);
-                    List<PageData> shopGoods = shopOrderInfoService.getGoodsByOrderId(shopOrder, Constant.VERSION_NO);
-
-                    if (shopGoods != null && shopGoods.size() > 0) {
-                        for (PageData newShopOrder : shopOrderList) {
-                            List<PageData> shopGoodsList = new ArrayList<PageData>();
-                            for (PageData newShopGoods : shopGoods) {
-                                if (newShopGoods.getString("shop_order_id").equals(String.valueOf(newShopOrder.get("order_id")))) {
-                                    shopGoodsList.add(newShopGoods);
-                                }
-                            }
-                            newShopOrder.put("shopGoodsList", shopGoodsList);
-                        }
-                    }
-                }
-            }
-            data.put("shopOrderList", shopOrderList);*/
             
             List<PageData> shopOrderList = shopOrderInfoService.listShopOrderByPage(pd);//查询所有订单
             if (shopOrderList != null && shopOrderList.size()>0) {
@@ -1425,20 +1398,27 @@ public class ShopOrderInfoWebService extends BaseWebService {
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             JSONObject user = JSONObject.parseObject(userstr);
             pd.put("user_id", String.valueOf(user.get("id")));
+            pd.put("seeds", user.getString("seeds"));
             pd.put("user_type", String.valueOf(user.getString("user_type")));
             pd.put("operator", String.valueOf(user.getString("account")));
+            /*if(StringUtil.isEmpty(pd.getString("order_id"))){
+                ar.setSuccess(false);
+                ar.setMessage("订单ID不能为空");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }*/
             if (StringUtil.isEmpty(pd.getString("order_no"))) {
                 ar.setSuccess(false);
                 ar.setMessage("订单号不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            if(StringUtil.isEmpty(pd.getString("order_amount"))){
+            /*if(StringUtil.isEmpty(pd.getString("order_amount"))){
                 ar.setSuccess(false);
                 ar.setMessage("付款金额不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }
+            }*/
 //            PageData shopOrderInfo = shopOrderInfoService.selectById(Integer.valueOf(pd.getString("order_id")), Constant.VERSION_NO);
             PageData shopOrderInfo = shopOrderInfoService.getShopOrderByOrderNo(pd, Constant.VERSION_NO);
             if ("2".equals(shopOrderInfo.getString("order_status"))) {//已支付
@@ -1447,6 +1427,13 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 ar.setErrorCode(CodeConstant.pay_finish);
                 return ar;
             }
+            if (StringUtil.isNotEmpty(shopOrderInfo.getString("trade_hash"))||"1".equals(shopOrderInfo.getString("is_lock"))) {//已支付
+                ar.setSuccess(false);
+                ar.setMessage("交易正在处理，请勿重复支付！");
+                ar.setErrorCode(CodeConstant.pay_finish);
+                return ar;
+            }
+            
             if ("1".equals(String.valueOf(shopOrderInfo.get("is_promote"))) && "4".equals(shopOrderInfo.getString("order_status"))) {//订单自动取消
                 ar.setSuccess(false);
                 ar.setMessage("未在规定时间内支付，订单自动取消！");
@@ -1463,19 +1450,37 @@ public class ShopOrderInfoWebService extends BaseWebService {
             String future_currency = String.valueOf(userWallet.get("future_currency"));
             if (new BigDecimal(String.valueOf(shopOrderInfo.get("order_amount"))).compareTo(new BigDecimal(future_currency)) > 0) {
                 ar.setSuccess(false);
-                ar.setMessage("余额不足，请充值");
+                ar.setMessage("积分余额不足，请充值");
                 ar.setErrorCode(CodeConstant.BALANCE_NOT_ENOUGH);
                 return ar;
             }
             pd.put("order_no", shopOrderInfo.getString("order_no"));
             pd.put("order_id", String.valueOf(shopOrderInfo.get("order_id")));
             pd.put("order_amount", shopOrderInfo.get("order_amount"));
+            pd.put("mobile_phone", user.getString("mobile_phone"));
+
             pd.put("shop_order_no", shopOrderInfo.getString("order_no"));
 
+            //商品表里有供应商有专门价格无需查询兑换费率
+           /* String  rate = "";
+            List<PageData> codeList =sysGenCodeService.findByGroupCode("LIMIT_RATE", Constant.VERSION_NO);
+            for(PageData code:codeList){
+                if("EXCHANGE_RATE".equals(code.get("code_name"))){
+                    rate = code.get("code_value").toString();
+                }
+            }
+            if(StringUtil.isEmpty(rate)){
+
+            }
+            pd.put("rate", rate);*/
+            //锁定订单
+            boolean lockOrderByOrderNo = shopOrderInfoService.lockOrderByOrderNo(pd);
+            logger.info("支付订单锁定结果lockOrderByOrderNo："+lockOrderByOrderNo);
+            
             boolean payNow = shopOrderInfoService.payNow(pd, Constant.VERSION_NO);
             if (payNow) {
                 ar.setSuccess(true);
-                ar.setMessage("支付成功");
+                ar.setMessage("交易处理中...请前往账单查看兑换结果");
                 data.put("order_no", pd.getString("order_no"));
                 data.put("order_amount", shopOrderInfo.get("order_amount"));
                 data.put("pay_time", DateUtil.getCurrDateTime());
@@ -1490,6 +1495,16 @@ public class ShopOrderInfoWebService extends BaseWebService {
             ar.setSuccess(false);
             ar.setMessage("网络繁忙，请稍候重试！");
             ar.setErrorCode(CodeConstant.SYS_ERROR);
+            //解锁订单
+            try {
+                boolean unLockOrderByOrderNo = shopOrderInfoService.unLockOrderByOrderNo(pd);
+                logger.info("支付订单解锁结果unLockOrderByOrderNo："+unLockOrderByOrderNo);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                ar.setSuccess(false);
+                ar.setMessage("网络繁忙，请稍候重试！");
+                ar.setErrorCode(CodeConstant.SYS_ERROR);
+            }
         }
         return ar;
     }

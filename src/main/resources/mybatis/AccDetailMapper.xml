@@ -600,4 +600,31 @@
         and a.`status` = '1'
         and a.confirm_time is null
     </select>
+    
+    <select id="getHashList" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+        select `hash`,acc_no from acc_detail where `status` = '5' and cntflag = '0'
+    </select>
+    <update id="updateCntflagByHash" parameterType="com.ecochain.ledger.model.PageData">
+        update acc_detail 
+        set 
+            caldate = #{caldate} ,
+            cntflag = #{cntflag} ,
+            status = #{status}
+        WHERE `hash` in 
+        <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+          #{item}   
+        </foreach> 
+    </update>
+    <update id="accDetailHashSummary" parameterType="com.ecochain.ledger.model.PageData">
+         update user_wallet w,
+         (select d1.user_id,SUM(d1.wlbi_amnt) smwlbi from acc_detail  d1 
+<!--         where d1.`status`='5' and d1.acc_no = '06'  -->
+            WHERE `hash` in 
+            <foreach collection="hashList" index="index" item="item" open="(" separator="," close=")">  
+              #{item}   
+            </foreach> 
+            group by d1.user_id) d
+        set w.future_currency = w.future_currency+ ifnull(d.smwlbi,0)
+        where w.user_id = d.user_id
+  </update>
 </mapper>
