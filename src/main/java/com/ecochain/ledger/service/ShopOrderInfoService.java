@@ -20,6 +20,16 @@ public interface ShopOrderInfoService {
      */
     PageData listPageShopOrder(Page page, String versionNo) throws Exception;
     /**
+     * @describe:分页查询订单列表
+     * @author: zhangchunming
+     * @date: 2017年5月17日下午1:50:31
+     * @param page
+     * @param versionNo
+     * @throws Exception
+     * @return: PageData
+     */
+    List<PageData> listShopOrderByPage(PageData pd) throws Exception;
+    /**
      * @describe:个人中心按订单状态查询数量
      * @author: zhangchunming
      * @date: 2016年10月27日下午6:05:34

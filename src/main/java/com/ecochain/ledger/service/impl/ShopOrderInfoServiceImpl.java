@@ -1,15 +1,14 @@
 package com.ecochain.ledger.service.impl;
 
 
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.mapper.*;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.model.ShopGoods;
-import com.ecochain.ledger.model.ShopOrderGoods;
-import com.ecochain.ledger.service.*;
-import com.ecochain.ledger.util.DateUtil;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +17,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.mapper.ShopCartMapper;
+import com.ecochain.ledger.mapper.ShopGoodsMapper;
+import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
+import com.ecochain.ledger.mapper.ShopOrderInfoMapper;
+import com.ecochain.ledger.mapper.UsersDetailsMapper;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.model.ShopGoods;
+import com.ecochain.ledger.model.ShopOrderGoods;
+import com.ecochain.ledger.service.AccDetailService;
+import com.ecochain.ledger.service.PayOrderService;
+import com.ecochain.ledger.service.ShopOrderGoodsService;
+import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.ShopOrderLogisticsService;
+import com.ecochain.ledger.service.UserAddressService;
+import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.util.DateUtil;
+import com.github.pagehelper.PageHelper;
 
 @Component("shopOrderInfoService")
 public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
@@ -365,6 +378,16 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         tpd.put("list", list);
         tpd.put("page", page);
         return tpd;
+    }
+    
+
+    @Override
+    public List<PageData> listShopOrderByPage(PageData pd) throws Exception{
+        if (pd.getPage() != null && pd.getRows() != null) {
+            PageHelper.startPage(pd.getPage(), pd.getRows());
+        }
+        List<PageData> list = (List<PageData>)dao.findForList("com.ecochain.ledger.mapper.ShopOrderInfoMapper.listShopOrderByPage", pd);
+        return list;
     }
 
     /* @Override

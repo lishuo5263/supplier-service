@@ -11,19 +11,24 @@ import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.*;
+import com.github.pagehelper.PageInfo;
+
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -867,9 +872,12 @@ public class ShopOrderInfoWebService extends BaseWebService {
      * @return: AjaxResponse
      */
     @LoginVerify
-    @RequestMapping(value = "/listPageShopOrder", method = RequestMethod.POST)
-
-    public AjaxResponse listPageShopOrder(HttpServletRequest request, Page page) {
+    @PostMapping("/listPageShopOrder")
+    @ApiOperation(nickname = "查询订单列表", value = "查询订单列表", notes = "查询订单列表！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse listPageShopOrder(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         Map<String, Object> data = new HashMap<String, Object>();
         try {
@@ -902,9 +910,10 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 pd.put("supplier_id", String.valueOf(oneSupplier.get("id")));
             } else {
                 pd.put("user_id", String.valueOf(user.get("id")));
+                pd.put("user_type", String.valueOf(user.getString("user_type")));
             }
-            page.setPd(pd);
-            PageData shopOrderPD = shopOrderInfoService.listPageShopOrder(page, Constant.VERSION_NO);//查询所有订单
+            /*page.setPd(pd);
+            PageData shopOrderPD = shopOrderInfoService.listShopOrderByPage(page, Constant.VERSION_NO);//查询所有订单
             List<PageData> shopOrderList = null;
             if (shopOrderPD != null) {
                 page = (Page) shopOrderPD.get("page");
@@ -938,9 +947,38 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     }
                 }
             }
-            data.put("shopOrderList", shopOrderList);
+            data.put("shopOrderList", shopOrderList);*/
+            
+            List<PageData> shopOrderList = shopOrderInfoService.listShopOrderByPage(pd);//查询所有订单
+            if (shopOrderList != null && shopOrderList.size()>0) {
+                    List<String> orderIdList = new ArrayList<String>();
+                    for (PageData shopOrder : shopOrderList) {
+                        orderIdList.add(String.valueOf(shopOrder.get("order_id")));
+                    }
+                    PageData shopOrder = new PageData();
+                    if ("4".equals(user.getString("user_type"))) {//供应商
+//                        shopOrder.put("supplierIdList", supplierIdList);
+                        shopOrder.put("supplier_id", String.valueOf(oneSupplier.get("id")));
+                    } else {
+                        shopOrder.put("user_id", String.valueOf(user.get("id")));
+                    }
+                    shopOrder.put("orderIdList", orderIdList);
+                    List<PageData> shopGoods = shopOrderInfoService.getGoodsByOrderId(shopOrder, Constant.VERSION_NO);
+
+                    if (shopGoods != null && shopGoods.size() > 0) {
+                        for (PageData newShopOrder : shopOrderList) {
+                            List<PageData> shopGoodsList = new ArrayList<PageData>();
+                            for (PageData newShopGoods : shopGoods) {
+                                if (newShopGoods.getString("shop_order_id").equals(String.valueOf(newShopOrder.get("order_id")))) {
+                                    shopGoodsList.add(newShopGoods);
+                                }
+                            }
+                            newShopOrder.put("shopGoodsList", shopGoodsList);
+                        }
+                    }
+            }
+            data.put("pageInfo", new PageInfo<PageData>(shopOrderList));
             ar.setData(data);
-            ar.setPage(page);
             ar.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1359,9 +1397,14 @@ public class ShopOrderInfoWebService extends BaseWebService {
      * @date: 2016年11月9日下午9:59:50
      * @return: AjaxResponse
      */
-   /* @LoginVerify
-    @RequestMapping(value = "/payNow", method = RequestMethod.POST)
-    
+    @LoginVerify
+    @PostMapping("/payNow")
+    @ApiOperation(nickname = "立即支付", value = "立即支付", notes = "立即支付！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "order_no", value = "订单号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "order_amount", value = "付款金额", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse payNow(HttpServletRequest request) {
         Map<String, Object> data = new HashMap<String, Object>();
         AjaxResponse ar = new AjaxResponse();
@@ -1373,24 +1416,18 @@ public class ShopOrderInfoWebService extends BaseWebService {
             pd.put("user_id", String.valueOf(user.get("id")));
             pd.put("user_type", String.valueOf(user.getString("user_type")));
             pd.put("operator", String.valueOf(user.getString("account")));
-            *//*if(StringUtil.isEmpty(pd.getString("order_id"))){
-                ar.setSuccess(false);
-                ar.setMessage("订单ID不能为空");
-                ar.setErrorCode(CodeConstant.PARAM_ERROR);
-                return ar;
-            }*//*
             if (StringUtil.isEmpty(pd.getString("order_no"))) {
                 ar.setSuccess(false);
                 ar.setMessage("订单号不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
-            *//*if(StringUtil.isEmpty(pd.getString("order_amount"))){
+            if(StringUtil.isEmpty(pd.getString("order_amount"))){
                 ar.setSuccess(false);
                 ar.setMessage("付款金额不能为空");
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
-            }*//*
+            }
 //            PageData shopOrderInfo = shopOrderInfoService.selectById(Integer.valueOf(pd.getString("order_id")), Constant.VERSION_NO);
             PageData shopOrderInfo = shopOrderInfoService.getShopOrderByOrderNo(pd, Constant.VERSION_NO);
             if ("2".equals(shopOrderInfo.getString("order_status"))) {//已支付
@@ -1422,22 +1459,8 @@ public class ShopOrderInfoWebService extends BaseWebService {
             pd.put("order_no", shopOrderInfo.getString("order_no"));
             pd.put("order_id", String.valueOf(shopOrderInfo.get("order_id")));
             pd.put("order_amount", shopOrderInfo.get("order_amount"));
-            pd.put("mobile_phone", user.getString("mobile_phone"));
-
             pd.put("shop_order_no", shopOrderInfo.getString("order_no"));
 
-            //商品表里有供应商有专门价格无需查询兑换费率
-           *//* String  rate = "";
-            List<PageData> codeList =sysGenCodeService.findByGroupCode("LIMIT_RATE", Constant.VERSION_NO);
-            for(PageData code:codeList){
-                if("EXCHANGE_RATE".equals(code.get("code_name"))){
-                    rate = code.get("code_value").toString();
-                }
-            }
-            if(StringUtil.isEmpty(rate)){
-
-            }
-            pd.put("rate", rate);*//*
             boolean payNow = shopOrderInfoService.payNow(pd, Constant.VERSION_NO);
             if (payNow) {
                 ar.setSuccess(true);
@@ -1458,7 +1481,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
             ar.setErrorCode(CodeConstant.SYS_ERROR);
         }
         return ar;
-    }*/
+    }
 
     /**
      * @param request

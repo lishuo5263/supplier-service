@@ -143,8 +143,8 @@ public class UsersWebService extends BaseWebService {
 	@PostMapping("/login")
 	@ApiOperation(nickname = "登陆接口", value = "用户登陆", notes = "用户登陆！")
 	@ApiImplicitParams({
-        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "path", dataType = "String"),
-        @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "path", dataType = "String")
+        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "query", dataType = "String")
 	})
 	public AjaxResponse login(HttpServletRequest request,HttpServletResponse response){
 	    AjaxResponse ar = new AjaxResponse();
@@ -307,8 +307,11 @@ public class UsersWebService extends BaseWebService {
     /**
      * 访问系统首页
      */
-    @RequestMapping(value="/index", method=RequestMethod.POST)
-    @ResponseBody
+    @PostMapping("/index")
+    @ApiOperation(nickname = "获取用户信息", value = "获取用户信息", notes = "获取用户信息")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
     public AjaxResponse index(HttpServletRequest request){
         AjaxResponse ar = new AjaxResponse();
         Map<String,Object> data = new HashMap<String,Object>();
@@ -348,7 +351,7 @@ public class UsersWebService extends BaseWebService {
     @PostMapping(value="/logout")
     @ApiOperation(nickname = "退出登陆", value = "退出登陆", notes = "退出登陆！")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "CSESSIONID", value = "登陆token", required = true, paramType = "path", dataType = "String")
+        @ApiImplicitParam(name = "CSESSIONID", value = "登陆token", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse logout(HttpServletRequest request)throws Exception{
         AjaxResponse ar = new AjaxResponse();
@@ -369,10 +372,10 @@ public class UsersWebService extends BaseWebService {
     @PostMapping("/forgetpwd")
     @ApiOperation(nickname = "忘记密码", value = "忘记密码，输入新密码", notes = "忘记密码，输入新密码！")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "path", dataType = "String"),
-        @ApiImplicitParam(name = "password", value = "新密码", required = true, paramType = "path", dataType = "String"),
-        @ApiImplicitParam(name = "cfPassWord", value = "确认密码", required = true, paramType = "path", dataType = "String"),
-        @ApiImplicitParam(name = "vcode", value = "验证码", required = true, paramType = "path", dataType = "String")
+        @ApiImplicitParam(name = "account", value = "登陆账号", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "password", value = "新密码", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "cfPassWord", value = "确认密码", required = true, paramType = "query", dataType = "String"),
+        @ApiImplicitParam(name = "vcode", value = "验证码", required = true, paramType = "query", dataType = "String")
     })
     public AjaxResponse forgetpwd(HttpServletRequest request,HttpServletResponse response){
         AjaxResponse ar = new AjaxResponse();

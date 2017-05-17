@@ -320,9 +320,70 @@
     group by a.order_id
     order by a.add_time desc
   </select>
+  
+  <select id="listShopOrderByPage" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
+    select
+        a.order_id,a.order_no,substring(a.add_time,1,19)add_time,a.goods_amount,a.order_status,a.order_amount,sum(b.goods_number*b.pay_price) total_price,b.pay_price,
+        a.consignee,a.mobile,a.province,a.city,a.area,a.address,a.zipcode,a.is_promote,a.pay_name,a.trade_hash,a.shipping_name
+    from
+        shop_order_info a,
+        shop_order_goods b
+    where 1=1
+    and a.order_id = b.shop_order_id
+    <if test="query != null and query !=''" >
+      and   (a.order_no like concat('%', #{query}, '%') or b.logistics_no like concat('%', #{query}, '%') or b.goods_name like concat('%', #{query}, '%') )
+    </if>
+    <if test="order_status != null and order_status !=''" >
+      and   a.order_status = #{order_status}
+    </if>
+    <!--供应商使用 state-->
+    <if test="state == 2 " >
+      and   b.state in (2,7,8)
+    </if>
+     <if test="state == 3 " >
+      and   b.state = 3 
+    </if>
+    <!-- <if test="pd.order_status != null and pd.order_status !=''" >
+      and   b.state = #{pd.order_status}
+    </if> -->
+    <if test="search_date == 'day'" >
+      and   date(a.add_time) = date(now())
+    </if>
+    <if test="search_date == 'week'" >
+      and   a.add_time between date_sub(now(),interval 1 week) and now()
+    </if>
+    <if test="search_date == 'month'" >
+      and   a.add_time between date_sub(now(),interval 1 month) and now()
+    </if>
+    <if test="search_date == 'three_month'" >
+      and   a.add_time between date_sub(now(),interval 3 month) and now()
+    </if>
+    <if test="search_date == 'half_year'" >
+      and   a.add_time between date_sub(now(),interval 6 month) and now()
+    </if>
+    <if test="search_date == 'year'" >
+      and   a.add_time between date_sub(now(),interval 1 year) and now()
+    </if>
+    <if test="supplier_id != null" >
+      and   b.supplier_id = #{supplier_id}
+      and   a.order_status not in('1','4','9')
+    </if>
+    <if test="user_id != null" >
+      and   a.user_id = #{user_id}
+      and   a.order_status not in('4','9')
+    </if>
+    <if test="user_type == 6 " >
+      and   a.shipping_name = '国内物流'
+    </if>
+    <if test="user_type == 7 " >
+      and   a.shipping_name = '境外物流'
+    </if>
+    group by a.order_id
+    order by a.add_time desc
+  </select>
   <select id="getGoodsByOrderId" parameterType="com.ecochain.ledger.model.PageData" resultType="com.ecochain.ledger.model.PageData">
     select
-        a.shop_order_id,a.shop_order_no,a.goods_id,a.goods_name,a.goods_number,a.goods_img,a.pay_price,a.sku_info,a.sku_value,a.logistics_no,a.state,a.cat_id,b.supplier_name,c.logistics_name,c.logistics_code
+        a.shop_order_id,a.shop_order_no,a.goods_id,a.goods_name,a.goods_number,a.goods_img,a.pay_price,a.sku_info,a.sku_value,a.logistics_no,a.state,a.cat_id,b.supplier_name,c.logistics_name,c.logistics_code,c.logistics_hash,c.logistics_name
     from
         shop_order_goods a 
         LEFT JOIN shop_supplier b on a.supplier_id = b.id 
