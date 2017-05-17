@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.annotation.LoginVerify;
 import com.ecochain.ledger.base.BaseWebService;
 import com.ecochain.ledger.constants.CodeConstant;
 import com.ecochain.ledger.constants.Constant;
@@ -30,6 +31,7 @@ import com.ecochain.ledger.constants.CookieConstant;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.SendVodeService;
+import com.ecochain.ledger.service.ShopOrderInfoService;
 import com.ecochain.ledger.service.UserLoginService;
 import com.ecochain.ledger.service.UserService;
 import com.ecochain.ledger.service.UsersDetailsService;
@@ -59,6 +61,8 @@ public class UsersWebService extends BaseWebService {
     private UserService userService;
     @Autowired
     private SendVodeService sendVodeService;
+    @Autowired
+    private ShopOrderInfoService shopOrderInfoService;
     
     @Resource(name="userDetailsService")
     private UsersDetailsService userDetailsService;
@@ -473,6 +477,141 @@ public class UsersWebService extends BaseWebService {
         }
         return ar;
     }
+    
+    
+    /**
+     * @describe:跳往会员中兴
+     * @author: zhangchunming
+     * @date: 2017年4月26日下午3:03:06
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @PostMapping("/toMemberCenter")
+    @ApiOperation(nickname = "个人中心", value = "个人中心，查询用户信息", notes = "个人中心，查询用户信息！")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse toMemberCenter(HttpServletRequest request){
+        logBefore(logger,"去往用户中兴");
+        AjaxResponse ar = new AjaxResponse();
+        Map<String,Object> data = new HashMap<String,Object>();
+        try {
+            PageData pd = new PageData();
+            pd  = this.getPageData();
+            //从session中查询用户信息
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            Integer user_id = user.getInteger("id");
+            
+            //获取用户信息
+            pd.put("user_id", user_id);
+            PageData userInfo = userDetailsService.getUserInfoByUserId(user_id, Constant.VERSION_NO);
+            data.put("userInfo", userInfo);
+                
+            //商城订单列表
+            
+            PageData oneSupplier = null;
+            if ("4".equals(user.getString("user_type"))) {//供应商
+                //根据user_id查询供应商信息
+//                supplierList = shopOrderInfoService.getSupplierByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
+                oneSupplier = shopOrderInfoService.getOneSupplierByUserId(String.valueOf(user.get("id")), Constant.VERSION_NO);
+                if (oneSupplier == null) {
+                    logger.error("--------查询商城订单列表-----------根据user_id查找不到供应商信息！");
+                    ar.setSuccess(false);
+                    ar.setMessage("查找不到供应商信息！");
+                    ar.setErrorCode(CodeConstant.NO_EXISTS);
+                    return ar;
+                }
+                /*for(PageData supplier:supplierList){
+                    supplierIdList.add((Integer)supplier.get("id"));
+                }
+                pd.put("supplierList", supplierList);*/
+                pd.put("supplier_id", String.valueOf(oneSupplier.get("id")));
+            } else {
+                pd.put("user_id", String.valueOf(user.get("id")));
+                pd.put("user_type", String.valueOf(user.getString("user_type")));
+            }
+            
+            PageData orderPD = new PageData();
+            List<PageData> shopOrderList = null;
+            if("6".equals(user.getString("user_type"))||"7".equals(user.getString("user_type"))){//6-国内物流 7-境外物流
+                //分页查询商城订单列表
+                orderPD.put("user_type", user.getString("user_type"));
+            }else if("4".equals(user.getString("user_type"))){//卖家
+                //分页查询商城订单列表
+                orderPD.put("supplier_id", String.valueOf(user.get("id")));
+            }else if("1".equals(user.getString("user_type"))){//买家
+                orderPD.put("user_id", String.valueOf(user.get("id")));
+            }
+            shopOrderList =  shopOrderInfoService.listShopOrderByPage(orderPD);//查询所有订单
+            if (shopOrderList != null && shopOrderList.size()>0) {
+                List<String> orderIdList = new ArrayList<String>();
+                for (PageData shopOrder : shopOrderList) {
+                    orderIdList.add(String.valueOf(shopOrder.get("order_id")));
+                }
+                PageData shopOrder = new PageData();
+                if ("4".equals(user.getString("user_type"))) {//供应商
+//                    shopOrder.put("supplierIdList", supplierIdList);
+                    shopOrder.put("supplier_id", String.valueOf(oneSupplier.get("id")));
+                } else {
+                    shopOrder.put("user_id", String.valueOf(user.get("id")));
+                }
+                shopOrder.put("orderIdList", orderIdList);
+                List<PageData> shopGoods = shopOrderInfoService.getGoodsByOrderId(shopOrder, Constant.VERSION_NO);
+
+                if (shopGoods != null && shopGoods.size() > 0) {
+                    for (PageData newShopOrder : shopOrderList) {
+                        List<PageData> shopGoodsList = new ArrayList<PageData>();
+                        for (PageData newShopGoods : shopGoods) {
+                            if (newShopGoods.getString("shop_order_id").equals(String.valueOf(newShopOrder.get("order_id")))) {
+                                shopGoodsList.add(newShopGoods);
+                            }
+                        }
+                        newShopOrder.put("shopGoodsList", shopGoodsList);
+                    }
+                }
+            }
+            data.put("shopOrderList", shopOrderList);
+            ar.setData(data);
+            ar.setSuccess(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
+        logAfter(logger);
+        return ar;
+    }
+    
+    @LoginVerify
+    @PostMapping("/getUserInfo")
+    @ApiOperation(nickname = "获取用户基本信息", value = "获取用户基本信息", notes = "获取用户基本信息")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "CSESSIONID", value = "会话token", required = true, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse getUserInfo(HttpServletRequest request){
+        logBefore(logger,"获取用户信息");
+        AjaxResponse ar = new AjaxResponse();
+        try {
+            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            JSONObject user = JSONObject.parseObject(userstr);
+            PageData userInfo = userDetailsService.getUserInfoByUserId(user.getInteger("id"), Constant.VERSION_NO);
+            ar.setSuccess(true);
+            ar.setData(userInfo);
+            ar.setMessage("获取用户信息成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
+        logAfter(logger);
+        return ar;
+    }
+    
+    
     public static void main(String[] args) {
       //初始  
         /*BigInteger num = new BigInteger("0");  
