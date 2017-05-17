@@ -46,4 +46,6 @@ public interface ShopOrderInfoMapper {
     String getSkuGoodsInfoByorderNo(String orderNo);
 
     String querySimpleGoodsInfo(String orderNum);
+
+    Integer queryOrderNum(String orderNum);
 }

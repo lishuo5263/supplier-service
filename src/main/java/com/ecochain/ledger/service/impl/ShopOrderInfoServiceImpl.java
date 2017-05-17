@@ -1,13 +1,20 @@
 package com.ecochain.ledger.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.mapper.*;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.model.ShopGoods;
+import com.ecochain.ledger.model.ShopOrderGoods;
+import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.Base64;
+import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.HttpUtil;
+import com.ecochain.ledger.util.StringUtil;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,32 +23,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.mapper.ShopCartMapper;
-import com.ecochain.ledger.mapper.ShopGoodsMapper;
-import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
-import com.ecochain.ledger.mapper.ShopOrderInfoMapper;
-import com.ecochain.ledger.mapper.UsersDetailsMapper;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.model.ShopGoods;
-import com.ecochain.ledger.model.ShopOrderGoods;
-import com.ecochain.ledger.service.AccDetailService;
-import com.ecochain.ledger.service.PayOrderService;
-import com.ecochain.ledger.service.QklLibService;
-import com.ecochain.ledger.service.ShopOrderGoodsService;
-import com.ecochain.ledger.service.ShopOrderInfoService;
-import com.ecochain.ledger.service.ShopOrderLogisticsService;
-import com.ecochain.ledger.service.UserAddressService;
-import com.ecochain.ledger.service.UserWalletService;
-import com.ecochain.ledger.util.Base64;
-import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.HttpUtil;
-import com.ecochain.ledger.util.StringUtil;
-import com.github.pagehelper.PageHelper;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component("shopOrderInfoService")
 public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
@@ -953,5 +940,15 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateOrderHashByOrderNo", pd)>0;
     }
 
-
+    /**
+     * @param orderNum
+     * @describe:根据订单号查询商品简要信息
+     * @author: Lisandro
+     * @date: 2017年5月2日14:53:36
+     * @return: String
+     */
+    @Override
+    public Integer queryOrderNum(String orderNum) {
+        return this.shopOrderInfoMapper.queryOrderNum(orderNum);
+    }
 }
