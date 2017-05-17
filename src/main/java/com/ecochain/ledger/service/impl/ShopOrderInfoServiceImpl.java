@@ -471,6 +471,11 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deliverGoods(PageData pd, String versionNo) throws Exception {
+        /*String tradeResult=qklLibService.sendDataToSys(pd.get("seeds"), pd.toString());
+        JSONObject json = JSON.parseObject(tradeResult);
+        if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
+            pd.put("logistics_hash",json.getString("result"));
+        }*/
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
         //修改订单商品关联表信息（添加物流单号及修改发货状态）
