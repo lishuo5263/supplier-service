@@ -149,6 +149,12 @@ public class ShopOrderInfoWebService extends BaseWebService {
             JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, ShopOrderGoods.class);
             objectMapper.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             shopOrderGood = objectMapper.readValue(shopOrderGoods, javaType);
+            /*String userstr = SessionUtil.getAttibuteForUser(Base64.getFromBase64(shopOrderGood.get(0).getCsessionid()));
+            JSONObject user = JSONObject.parseObject(userstr);
+            if(user == null || !user.containsKey("seeds")){
+                return fastReturn(null, false, "下单失败，登录超时，请重新登陆！", CodeConstant.UNLOGIN);
+            }
+            logger.info("sessionKey中用户信息------------>"+user.toJSONString());*/
             if (!StringUtil.isNotEmpty(String.valueOf(shopOrderGood.get(0).getUserId()))) {
                 return fastReturn(null, false, "订单生成失败，userId参数为空！", CodeConstant.PARAM_ERROR);
             } else if (!StringUtil.isNotEmpty(String.valueOf(shopOrderGood.get(0).getAddressId()))) {
@@ -183,6 +189,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     shopOrderGood.get(0).setOrderStatus(1);
                     shopOrderGood.get(0).setShippingFee(new BigDecimal(0));
                     shopOrderGood.get(0).setIntegralMoney(new BigDecimal(0));
+                    //shopOrderGood.get(0).setTradeHash(user.getString("seeds"));
                     result = this.shopOrderInfoService.insertShopOrder(shopOrderGood);
                     if (result.get(0).get("ErrorInsert") != null) {
                         return fastReturn(result, false, "订单生成失败，goodsId参数为空！", CodeConstant.PARAM_ERROR);
@@ -192,7 +199,9 @@ public class ShopOrderInfoWebService extends BaseWebService {
                         return fastReturn(result, false, "订单生成失败，用户类型只能为普通会员和创业会员，商品无法购买！", CodeConstant.ERROR_NO_PERMISSION);
                     } else if (result.get(0).get("ErrorCreateOrderByGoodsId") != null) {
                         return fastReturn(result, false, "订单生成失败，此款商品在数据库中不存在！", CodeConstant.ERROR_INFO_NOT_SAME);
-                    } else {
+                    }else if (result.get(0).get("ErrorInsertByBlockChain") != null) {
+                        return fastReturn(result, false, "订单生成失败，调用区块链接口发生错误", CodeConstant.ERROR_BLOCKCHAIN);
+                    }  else {
                         ar = fastReturn(result, true, "生成用户ID为：" + shopOrderGood.get(0).getUserId() + "的订单成功！", CodeConstant.SC_OK);
                     }
                 } /*else if ("1".equals(shopOrderGood.get(0).getIsPromote())) {  //促销商品下单
