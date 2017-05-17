@@ -1,15 +1,18 @@
 package com.ecochain.ledger;
 
 
-import com.ecochain.ledger.util.Logger;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+
+import com.ecochain.ledger.util.Logger;
 
 
 @EnableAutoConfiguration
 @SpringBootApplication
+@ServletComponentScan
 @MapperScan(basePackages = "com.ecochain.ledger.mapper")
 public class Application {
 
