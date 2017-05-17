@@ -103,6 +103,8 @@ public class ShopOrderGoods implements Serializable {
 
     private Date shippingTime;
 
+    private String data;
+
     public String getActivityId() {
         return activityId;
     }
@@ -469,5 +471,13 @@ public class ShopOrderGoods implements Serializable {
 
     public void setIsMutilPrice(Integer isMutilPrice) {
         this.isMutilPrice = isMutilPrice;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

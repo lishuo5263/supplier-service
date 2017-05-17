@@ -217,6 +217,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Map<String, Object>> insertShopOrder(List<ShopOrderGoods> shopOrderGoods) throws Exception {
         // 先查询用户类型再去shop_goods 取最终商品价格，shopOrderGoods记录当时购买价格，ShopOrderInfo order_amount 计算总订单价格
+        logger.info("------------------------------>传递给区块链data值为："+shopOrderGoods.get(0).getData());
         ShopGoods shopGoods = null;
         List<Map<String, Object>> result = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -251,10 +252,32 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             if(usersType > 2){ //2以上类型的用户不可下单
                 map.put("ErrorInsertNotAllowByUsersType","抱歉，当前账户没有购买此商品的权限，只有普通会员/创业会员才能购买哦！");
                 result.add(map);
-                return result;
+                return result;q
             }
         }*/
-        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods);//此时TradeHash值为seeds
+
+        logger.info("====================测试代码========start================");
+        String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
+        JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
+        PageData keyPd = new PageData();
+        keyPd.put("data","data");
+        keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
+        System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
+        //2. 获取公钥签名
+        String signJsonObjStr =HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_for_sign",JSON.toJSONString(keyPd));
+        JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
+        Map<String, Object> paramentMap =new HashMap<String, Object>();
+        paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        paramentMap.put("data","data");
+        paramentMap.put("sign",signJsonObj.getString("result"));
+        String result1 = HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_to_sys", JSON.toJSONString(paramentMap));
+        JSONObject json = JSON.parseObject(result1);
+        if(StringUtil.isNotEmpty(json.getString("result"))){
+            shopOrderGoods.get(0).setTradeHash(json.getString("result"));
+        }
+        logger.info("====================测试代码=======end=================");
+        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods.get(0).getData());//此时TradeHash值为seeds
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             shopOrderGoods.get(0).setTradeHash(json.getString("result"));
@@ -476,11 +499,11 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deliverGoods(PageData pd, String versionNo) throws Exception {
-        /*String tradeResult=qklLibService.sendDataToSys(pd.get("seeds"), pd.toString());
+        String tradeResult=qklLibService.sendDataToSys(pd.getString("seeds"), JSONObject.toJSON(pd.toString()));
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             pd.put("logistics_hash",json.getString("result"));
-        }*/
+        }
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
         //修改订单商品关联表信息（添加物流单号及修改发货状态）

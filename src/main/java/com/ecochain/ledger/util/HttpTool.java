@@ -1,13 +1,5 @@
 package com.ecochain.ledger.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
@@ -16,6 +8,15 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Http操作辅助工具
@@ -46,9 +47,9 @@ public class HttpTool {
             Element root = doc.getRootElement();
 
 
-            String code = root.elementText("code"); 
-            String msg = root.elementText("msg");   
-            String smsid = root.elementText("smsid");   
+            String code = root.elementText("code");
+            String msg = root.elementText("msg");
+            String smsid = root.elementText("smsid");
             
             
             System.out.println(code);
@@ -102,7 +103,7 @@ public class HttpTool {
         return sb.toString().replaceFirst("\n", "");
     }
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         Map<String, String> paramentMap =new HashMap<String, String>();
         /*paramentMap.put("address","f1gCgjsEhW8KyKcB18bPQzvJjeAVEgmBN6ubzdcR1njE");
         paramentMap.put("data","test");
