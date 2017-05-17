@@ -56,7 +56,7 @@ public class BlockChainTask {
                 } else if ("deliverGoods".equals(true)) {
                     HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/deliverGoods?shop_order_no=170517112233972312999&goods_id=1120&logistics_no=111&logistics_name=22", "deliverGoods"); //deliverGoods 此处值应为给区块链的data值
                     continue;
-                } else if ("insertOrder".equals(true)) {
+                } else if ("payNow".equals(true)) {
                     HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/api/rest/shopOrder/insertShopOrder", "insertOrder"); //insertOrder 此处值应为给区块链的data值
                     continue;
                 }
