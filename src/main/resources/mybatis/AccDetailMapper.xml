@@ -37,6 +37,9 @@
       <if test="user_id != null" >
         user_id,
       </if>
+      <if test="user_type != null" >
+        user_type,
+      </if>
       <if test="acc_no != null" >
         acc_no,
       </if>
@@ -86,6 +89,9 @@
       <if test="sanhq != null" >
         sanhq,
       </if>
+      <if test="hash != null" >
+        hash,
+      </if>
       <if test="remark1 != null" >
         remark1,
       </if>
@@ -105,6 +111,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="user_id != null" >
         #{user_id},
+      </if>
+      <if test="user_type != null" >
+        #{user_type},
       </if>
       <if test="acc_no != null" >
         #{acc_no},
@@ -154,6 +163,9 @@
       </if>
       <if test="sanhq != null" >
         #{sanhq},
+      </if>
+      <if test="hash != null" >
+        #{hash},
       </if>
       <if test="remark1 != null" >
         #{remark1},

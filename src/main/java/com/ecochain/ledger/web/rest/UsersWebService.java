@@ -314,6 +314,7 @@ public class UsersWebService extends BaseWebService {
     /**
      * 访问系统首页
      */
+    @LoginVerify
     @PostMapping("/index")
     @ApiOperation(nickname = "获取用户信息", value = "获取用户信息", notes = "获取用户信息")
     @ApiImplicitParams({

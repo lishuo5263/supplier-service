@@ -1,10 +1,13 @@
 package com.ecochain.ledger.service.impl;
 
 import java.util.List;
+
 import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
@@ -12,10 +15,13 @@ import com.ecochain.ledger.service.UsersDetailsService;
 import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.Logger;
 import com.github.pagehelper.PageHelper;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
+
 import java.util.List;
 
 @Service("userDetailsService")
@@ -52,7 +58,8 @@ public class UsersDetailsServiceImpl implements UsersDetailsService{
         dao.save("com.ecochain.ledger.mapper.UsersDetailsMapper.insertSelective", pd);
         //添加用户登陆表
         dao.save("UserLoginMapper.insertSelective", pd);
-        
+        //添加用户钱包账户
+        dao.save("UserWalletMapper.insertSelective", pd);
         
         StringBuffer buf = new StringBuffer();
         while(buf.length()<32){
