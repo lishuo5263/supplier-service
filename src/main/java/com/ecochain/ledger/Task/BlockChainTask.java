@@ -43,7 +43,12 @@ public class BlockChainTask {
         for (Object resultMsg : toDayBlockInfo.getJSONArray("result")) {
             JSONObject resultInfo = (JSONObject) resultMsg;
             if (StringUtil.isNotEmpty(resultInfo.getString("data"))) {
-                System.out.println(Base64.getFromBase64(resultInfo.getString("data")));
+                JSONObject toDayBlockInfoo  =JSONObject.parseObject(Base64.getFromBase64(resultInfo.getString("data")));
+                if(Integer.valueOf(shopOrderInfoService.queryOrderNum(toDayBlockInfoo.getString("shop_order_no"))) > 0){
+                    continue;
+                }else{
+
+                }
                 break;
             }
         }
