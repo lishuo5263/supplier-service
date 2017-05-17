@@ -55,6 +55,8 @@ public class BlockChainTask {
                 }else if("payNow".equals(toDayBlockInfoo.getString("bussType"))){
                     HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/api/rest/shopOrder/insertShopOrder", "insertOrder"); //insertOrder 此处值应为给区块链的data值
                     continue;
+                }else{
+                    continue;
                 }
             }
         }
