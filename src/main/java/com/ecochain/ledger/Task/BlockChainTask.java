@@ -2,12 +2,14 @@ package com.ecochain.ledger.Task;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.service.ShopOrderInfoService;
-import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.Base64;
 import com.ecochain.ledger.util.HttpTool;
+import com.ecochain.ledger.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,7 +30,7 @@ public class BlockChainTask {
 
     private Logger logger = Logger.getLogger(BlockChainTask.class);
 
-   // @Scheduled(fixedDelay=10000)
+    @Scheduled(fixedDelay=10000)
     public void scheduler()throws  Exception {
         /**
          * 1.需要调用区块链接口查出当日增量的hash数据
@@ -36,10 +38,17 @@ public class BlockChainTask {
          * 3.取data字段中每个调用区块链接口存入的bussType 进行业务判断后，调用自身系统相对应的接口方法同步数据
          */
        logger.info(">>>>>>>>>>>>> Scheduled  Execute Interface ServiceName:   " +serviceName +" ServicePort:  " +servicePort);
-        String getToDayBlockInfo = HttpTool.doPost("http://192.168.200.85:8332/GetDataLastNew", DateUtil.getCurrDateTime());
+        String getToDayBlockInfo = HttpTool.doPost("http://192.168.200.85:8332/GetDataList", "100");
         JSONObject toDayBlockInfo = JSONObject.parseObject(getToDayBlockInfo);
-        for(int i =0;i<10;i++){  //需循环list
-            if(true){ //这里为处理Json话后的data逻辑
+        for (Object resultMsg : toDayBlockInfo.getJSONArray("result")) {
+            JSONObject resultInfo = (JSONObject) resultMsg;
+            if (StringUtil.isNotEmpty(resultInfo.getString("data"))) {
+                System.out.println(Base64.getFromBase64(resultInfo.getString("data")));
+                break;
+            }
+        }
+       /* for(int i =0;i<toDayBlockInfoList.size();i++){  //需循环list
+            if(toDayBlockInfoList.get(i)){ //这里为处理Json话后的data逻辑
                 shopOrderInfoService.queryOrderNum(""); //根据订单号查询当前系统是否处理此业务
                 if("insertOrder".equals(true)){
                     HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/api/rest/shopOrder/insertShopOrder", "insertOrder"); //insertOrder 此处值应为给区块链的data值
@@ -52,7 +61,7 @@ public class BlockChainTask {
                     continue;
                 }
             }
-        }
+        }*/
 
     }
 
