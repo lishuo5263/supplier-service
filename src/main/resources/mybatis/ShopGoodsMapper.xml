@@ -39,7 +39,6 @@
     <result column="goods_desc" property="goodsDesc" jdbcType="VARCHAR" />
     <result column="activity_id" property="activityId" jdbcType="VARCHAR" />
     <result column="is_mutil_price" property="isMutilPrice" jdbcType="INTEGER" />
-    <result column="trade_type" property="tradeType" jdbcType="VARCHAR"/>
 
   </resultMap>
   <sql id="Base_Column_List" >
@@ -47,7 +46,7 @@
     brand_detail_id,  market_price, goods_brief, goods_thumb, goods_img,
     original_img, is_real, supplier_id, is_state, add_time, is_delete, is_best, is_new,
     is_hot, is_promote, goods_type, give_integral, rank_integral, keywords, region_id,
-    region_name, updatetime,is_mutil_price,trade_type
+    region_name, updatetime,is_mutil_price
   </sql>
   <sql id="Base_Column_List2" >
     goods_id, cat_id, goods_sn, goods_name, goods_sales, brand_id,vip_price,goods_price,
