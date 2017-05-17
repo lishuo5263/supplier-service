@@ -1,4 +1,4 @@
-package com.ecochain.ledger.quartz.job;
+package com.ecochain.ledger.Task;
 
 
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.Constant;
@@ -21,9 +22,10 @@ import com.ecochain.ledger.util.StringUtil;
  * @author zhangchunming
  * @描述：定时账户汇总
  */
+@Component
 @EnableScheduling
-public class AccHashSummaryJob {
-    private Logger logger = Logger.getLogger(AccHashSummaryJob.class);
+public class AccHashSummaryTask {
+    private Logger logger = Logger.getLogger(AccHashSummaryTask.class);
 	@Autowired
 	private AccDetailService accDetailService;
 	@Autowired
