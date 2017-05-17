@@ -26,6 +26,8 @@ public class ShopOrderInfo implements Serializable {
 
     private String postscript;
 
+    private String tradeHash;
+
     private String shippingName;
 
     private String payName;
@@ -178,5 +180,13 @@ public class ShopOrderInfo implements Serializable {
 
     public void setShippingTime(Date shippingTime) {
         this.shippingTime = shippingTime;
+    }
+
+    public String getTradeHash() {
+        return tradeHash;
+    }
+
+    public void setTradeHash(String tradeHash) {
+        this.tradeHash = tradeHash;
     }
 }

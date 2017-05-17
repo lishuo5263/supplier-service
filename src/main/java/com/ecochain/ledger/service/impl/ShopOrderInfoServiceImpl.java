@@ -12,6 +12,7 @@ import com.ecochain.ledger.model.ShopGoods;
 import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.StringUtil;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -243,7 +244,29 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
                 return result;q
             }
         }*/
-        String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods.get(0).getData());//此时TradeHash值为seeds
+
+        logger.info("====================测试代码========start================");
+        String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
+        JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
+        PageData keyPd = new PageData();
+        keyPd.put("data","data");
+        keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
+        System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
+        //2. 获取公钥签名
+        String signJsonObjStr =HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_for_sign",JSON.toJSONString(keyPd));
+        JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
+        Map<String, Object> paramentMap =new HashMap<String, Object>();
+        paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        paramentMap.put("data","data");
+        paramentMap.put("sign",signJsonObj.getString("result"));
+        String result1 = HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_to_sys", JSON.toJSONString(paramentMap));
+        JSONObject json = JSON.parseObject(result1);
+        if(StringUtil.isNotEmpty(json.getString("result"))){
+            shopOrderGoods.get(0).setTradeHash(json.getString("result"));
+        }
+        logger.info("====================测试代码=======end=================");
+        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods.get(0).getData());//此时TradeHash值为seeds
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             shopOrderGoods.get(0).setTradeHash(json.getString("result"));
@@ -251,7 +274,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             map.put("ErrorInsertByBlockChain","订单生成失败，调用区块链接口发生错误！");
             result.add(map);
             return result;
-        }
+        }*/
         if ("0".equals(shopOrderGoods.get(0).getIsPromote())) { //商城普通订单
             for (int i = 0; i < shopOrderGoods.size(); i++) {
                 if (StringUtils.isNotEmpty(String.valueOf(shopOrderGoods.get(i).getGoodsId()))) {

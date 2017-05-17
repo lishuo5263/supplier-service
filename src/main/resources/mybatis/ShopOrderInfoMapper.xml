@@ -13,6 +13,7 @@
     <result column="shipping_name" property="shippingName" jdbcType="VARCHAR" />
     <result column="pay_name" property="payName" jdbcType="VARCHAR" />
     <result column="how_oos" property="howOos" jdbcType="VARCHAR" />
+    <result column="trade_hash" property="tradeHash" jdbcType="VARCHAR" />
     <result column="goods_amount" property="goodsAmount" jdbcType="DECIMAL" />
     <result column="shipping_fee" property="shippingFee" jdbcType="DECIMAL" />
     <result column="integral_money" property="integralMoney" jdbcType="DECIMAL" />
@@ -71,14 +72,14 @@
     consignee,mobile,address,zipcode,province,city,area,order_status, postscript, shipping_name,
     pay_name, how_oos, goods_amount,
     shipping_fee, integral_money, order_amount,
-    add_time, shipping_time)
+    add_time, shipping_time,trade_hash)
     values
    (#{orderId,jdbcType=INTEGER}, #{orderNo,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER},#{addressId,jdbcType=INTEGER},#{isPromote,jdbcType=VARCHAR},
     #{consignee,jdbcType=VARCHAR},#{mobile,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR},#{zipCode,jdbcType=VARCHAR},#{province,jdbcType=VARCHAR},#{city,jdbcType=VARCHAR},#{area,jdbcType=VARCHAR},
     #{orderStatus,jdbcType=INTEGER}, #{postscript,jdbcType=VARCHAR},#{shippingName,jdbcType=VARCHAR},
     #{payName,jdbcType=VARCHAR}, #{howOos,jdbcType=VARCHAR}, #{goodsAmount,jdbcType=DECIMAL},
     #{shippingFee,jdbcType=DECIMAL}, #{integralMoney,jdbcType=DECIMAL}, #{orderAmount,jdbcType=DECIMAL},
-    #{addTime,jdbcType=TIMESTAMP}, #{shippingTime,jdbcType=TIMESTAMP})
+    #{addTime,jdbcType=TIMESTAMP}, #{shippingTime,jdbcType=TIMESTAMP},#{tradeHash,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.ecochain.ledger.model.PageData" >
     insert into shop_order_info
