@@ -11,15 +11,17 @@ import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.service.*;
 import com.ecochain.ledger.util.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -31,8 +33,8 @@ import java.util.Map;
 /**
  * Created by LiShuo on 2016/10/28.
  */
-@Controller
-@RequestMapping("/shopOrder")
+@RestController
+@RequestMapping(value = "/api/rest/shopOrder")
 public class ShopOrderInfoWebService extends BaseWebService {
 
     @Autowired
@@ -63,7 +65,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
   /*  @LoginVerify
     @RequestMapping(value = "/cancleOrder")
-    @ResponseBody
+    
     public AjaxResponse cancleOrder(HttpServletRequest request, Page page) {
         Map<String, Object> data = new HashMap<String, Object>();
         AjaxResponse ar = new AjaxResponse();
@@ -120,8 +122,25 @@ public class ShopOrderInfoWebService extends BaseWebService {
     }*/
 
     //@LoginVerify
-    @ResponseBody
+
     @RequestMapping(value = "insertShopOrder", method = RequestMethod.POST, consumes = "application/json")
+    @ApiOperation(nickname = "insertShopOrder", value = "商城生成订单", notes = "商城生成订单！！")
+    @ApiImplicitParam(name = "shopOrderGoods", value = "下单参数 列如： {\n" +
+            "        \"supplierName\":\"test supplier\",\n" +
+            "        \"goodsNumber\":\"3\",\n" +
+            "        \"userCode\":\"999\",\n" +
+            "        \"userId\":\"25918\",\n" +
+            "        \"addressId\":\"774\",\n" +
+            "        \"postscript\":\"ls测试\",\n" +
+            "        \"shippingName\":\"货到付款\",\n" +
+            "        \"howOos\":\"不要了\",\n" +
+            "        \"payName\":\"weicat pay\",\n" +
+            "        \"goodsId\":\"1120\",\n" +
+            "        \"skuValue\":\"lstextlslsls\",\n" +
+            "        \"payPrice\":\"100\",\n" +
+            "        \"csessionid\":\"4c7cb3c15bfd471a98b9a42e1cfa6791\",\n" +
+            "\"isPromote\":\"0\",\"skuInfo\":\"{\\\"颜色\\\":\\\"黑色\\\",\\\"规格\\\":\\\"个\\\",\\\"数量\\\":1,\\\"重量\\\":\\\"100g\\\"}\"\n" +
+            "    }", required = true, paramType = "body", dataType = "BlogArticleBeen")
     public synchronized AjaxResponse insertShopOrder(@RequestBody String shopOrderGoods, HttpServletRequest request) throws Exception {
         AjaxResponse ar = new AjaxResponse();
         List<ShopOrderGoods> shopOrderGood = null;
@@ -147,7 +166,6 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     return fastReturn(null, false, "订单生成失败，订单商品数量不能为空！", CodeConstant.PARAM_ERROR);
                 } else if (!StringUtil.isNotEmpty(shopOrderGood.get(i).getSkuInfo())) {
                     shopOrderGood.get(i).setSkuInfo("无sku信息");
-                    //return fastReturn(null, false, "订单生成失败，第"+i+"个商品信息中 skuInfo参数为空！",CodeConstant.PARAM_ERROR);
                 } else if (!StringUtil.isNotEmpty(String.valueOf(shopOrderGood.get(i).getGoodsNumber()))) {
                     return fastReturn(null, false, "订单生成失败，第" + i + "个商品信息中 goodsNumber参数为空！", CodeConstant.PARAM_ERROR);
                 } else if (!StringUtil.isNotEmpty(String.valueOf(shopOrderGood.get(0).getGoodsId()))) {
@@ -841,7 +859,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
     @LoginVerify
     @RequestMapping(value = "/listPageShopOrder", method = RequestMethod.POST)
-    @ResponseBody
+
     public AjaxResponse listPageShopOrder(HttpServletRequest request, Page page) {
         AjaxResponse ar = new AjaxResponse();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -932,7 +950,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
     @LoginVerify
     @RequestMapping(value = "/getShopOrderNumByStatus", method = RequestMethod.POST)
-    @ResponseBody
+
     public AjaxResponse getShopOrderNumByStatus(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -981,7 +999,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
     @LoginVerify
     @RequestMapping(value = "/getOrderTotalNum", method = RequestMethod.POST)
-    @ResponseBody
+
     public AjaxResponse getOrderTotalNum(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -1040,7 +1058,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
    /* @LoginVerify
     @RequestMapping(value="/confirmReceipt", method=RequestMethod.POST)
-    @ResponseBody
+    
     public AjaxResponse confirmReceipt(HttpServletRequest request){
         AjaxResponse ar = new AjaxResponse();
         try {
@@ -1169,7 +1187,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
 
 //    @LoginVerify
     /*@RequestMapping(value = "/confirmReceipt", method = RequestMethod.POST)
-    @ResponseBody
+    
     public AjaxResponse confirmReceipt(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
@@ -1265,7 +1283,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
 */
     @LoginVerify
     @RequestMapping(value = "/deliverGoods", method = RequestMethod.POST)
-    @ResponseBody
+
     public AjaxResponse deliverGoods(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
@@ -1334,7 +1352,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
    /* @LoginVerify
     @RequestMapping(value = "/payNow", method = RequestMethod.POST)
-    @ResponseBody
+    
     public AjaxResponse payNow(HttpServletRequest request) {
         Map<String, Object> data = new HashMap<String, Object>();
         AjaxResponse ar = new AjaxResponse();
@@ -1442,7 +1460,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
     @LoginVerify
     @RequestMapping(value = "/getShopOrderByOrderNo", method = RequestMethod.POST)
-    @ResponseBody
+
     public AjaxResponse getShopOrderByOrderNo(HttpServletRequest request) {
         Map<String, Object> data = new HashMap<String, Object>();
         AjaxResponse ar = new AjaxResponse();
@@ -1480,7 +1498,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      * @return: AjaxResponse
      */
     /*@RequestMapping(value = "/refundGoods", method = RequestMethod.POST)
-    @ResponseBody
+    
     public AjaxResponse refundGoods(HttpServletRequest request) {
         Map<String, Object> data = new HashMap<String, Object>();
         AjaxResponse ar = new AjaxResponse();
