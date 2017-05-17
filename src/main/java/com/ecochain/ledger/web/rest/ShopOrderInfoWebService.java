@@ -25,10 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by LiShuo on 2016/10/28.
@@ -1067,7 +1064,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
      */
    /* @LoginVerify
     @RequestMapping(value="/confirmReceipt", method=RequestMethod.POST)
-    
+
     public AjaxResponse confirmReceipt(HttpServletRequest request){
         AjaxResponse ar = new AjaxResponse();
         try {
@@ -1117,7 +1114,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 pd.put("other_amnt", shopOrder.getString("order_amount"));//应付款金额
                 pd.put("otherno", shopOrder.getString("order_no"));//业务订单号
                 pd.put("operator", user.getString("mobile_phone"));
-                
+
 //                pd.put("shop_order_no", shopOrder.getString("order_no"));
                 //获取三界行情
                 BigDecimal sanhq =new BigDecimal(0);//这里需要获取SANHQ数据
@@ -1126,7 +1123,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                    Sanexrate=(String)cacheManager.get(RedisConstantUtil.R8EXCHANGERATE);
                     logAfter(logger);
                 }else{
-                   Sanexrate =R8ExChangeController.getSanExrate().equals("")?"0":R8ExChangeController.getSanExrate();  
+                   Sanexrate =R8ExChangeController.getSanExrate().equals("")?"0":R8ExChangeController.getSanExrate();
                    try{
                        if(StringUtil.isNotEmpty(Sanexrate)){
                            cacheManager.set(RedisConstantUtil.R8EXCHANGERATE,Sanexrate,WlscConstants.WLSC_R8EXCHANGE_RATE_SECOND);
@@ -1139,14 +1136,14 @@ public class ShopOrderInfoWebService extends BaseWebService {
                           if(codeName.equals(code.get("code_name"))){
                               Sanexrate = code.get("code_value").toString();
                           }
-                      }                                        
+                      }
                        sanhq =new BigDecimal(Sanexrate);
                    }
-                } 
+                }
                 pd.put("sanhq",sanhq);
-                
+
 //                pd.put("shop_order_no", shopOrder.getString("order_no"));
-                
+
                 //商品成本价及供应商拿到的价格，无需获取费率
                 String  rate = "";
                 List<PageData> codeList =sysGenCodeService.findByGroupCode("LIMIT_RATE", Constant.VERSION_NO);
@@ -1154,7 +1151,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     if("EXCHANGE_RATE".equals(code.get("code_name"))){
                         rate = code.get("code_value").toString();
                     }
-                }   
+                }
                 pd.put("rate", rate);
                 boolean updateCheckStatus = shopOrderInfoService.confirmReceipt(pd, Constant.VERSION_NO);
                 if(updateCheckStatus){
@@ -1190,13 +1187,13 @@ public class ShopOrderInfoWebService extends BaseWebService {
             ar.setSuccess(false);
             ar.setMessage("网络繁忙，请稍候重试！");
             ar.setErrorCode(CodeConstant.SYS_ERROR);
-        }   
+        }
         return ar;
     }*/
 
 //    @LoginVerify
     /*@RequestMapping(value = "/confirmReceipt", method = RequestMethod.POST)
-    
+
     public AjaxResponse confirmReceipt(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
@@ -1290,16 +1287,26 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 */
-    @LoginVerify
+    //@LoginVerify
     @RequestMapping(value = "/deliverGoods", method = RequestMethod.POST)
-
+    @ApiOperation(nickname = "deliverGoods", value = "物流确认发货", notes = "物流确认发货！！")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shop_order_no", value = "订单号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "goods_id", value = "商品ID", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "logistics_no", value = "物流单号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "logistics_name", value = "物流名称", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "CSESSIONID", value = "CSESSIONID", required = false, paramType = "query", dataType = "String"),
+    })
     public AjaxResponse deliverGoods(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
             /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
             String userstr = SessionUtil.getAttibuteForUser(key);*/
-            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
-            JSONObject user = JSONObject.parseObject(userstr);
+
+
+            /*String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+            logger.info("sessionKey中用户信息------------>"+userstr);
+            JSONObject user = JSONObject.parseObject(userstr);*/
             PageData pd = new PageData();
             pd = this.getPageData();
             if (StringUtil.isEmpty(pd.getString("shop_order_no"))) {
@@ -1332,7 +1339,11 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 ar.setSuccess(false);
                 ar.setErrorCode(CodeConstant.NO_EXISTS);
             }
+            //pd.put("seeds",user.get("seeds"));
             pd.put("rec_id", shopOrder.get("rec_id"));
+            pd.put("shop_order_id", shopOrder.get("shop_order_id"));
+            pd.put("createtime",new Date());
+            pd.put("logistics_code", pd.getString("logistics_no").toLowerCase());
             pd.put("state", "3");//发货
             boolean deliverGoods = shopOrderInfoService.deliverGoods(pd, Constant.VERSION_NO);
             if (deliverGoods) {
