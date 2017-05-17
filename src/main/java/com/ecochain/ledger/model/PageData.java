@@ -133,10 +133,10 @@ public class PageData extends HashMap implements Map{
 	
 	
 	
-	@Id
+	/*@Id
     @Column(name = "Id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;*/
 
     @Transient
     private Integer page = 1;
@@ -144,13 +144,13 @@ public class PageData extends HashMap implements Map{
     @Transient
     private Integer rows = 10;
 
-    public Integer getId() {
+    /*public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
+    }*/
 
     public Integer getPage() {
         return page;
