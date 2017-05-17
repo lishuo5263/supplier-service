@@ -236,6 +236,15 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
                 return result;
             }
         }*/
+        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods);//此时TradeHash值为seeds
+        JSONObject json = JSON.parseObject(tradeResult);
+        if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
+            shopOrderGoods.get(0).setTradeHash(json.getString("result"));
+        }else{
+            map.put("ErrorInsertByBlockChain","订单生成失败，调用区块链接口发生错误！");
+            result.add(map);
+            return result;
+        }*/
         if ("0".equals(shopOrderGoods.get(0).getIsPromote())) { //商城普通订单
             for (int i = 0; i < shopOrderGoods.size(); i++) {
                 if (StringUtils.isNotEmpty(String.valueOf(shopOrderGoods.get(i).getGoodsId()))) {
@@ -340,7 +349,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         shopOrderGoods.get(0).setArea(pd.getString("area"));
         this.shopOrderInfoMapper.insertShopOrder(shopOrderGoods.get(0));//创建订单信息
         updateOrderIdByOrderNo(shopOrderGoods.get(0).getOrderNo(), "");
-        this.shopCartMapper.batchDeleteMyCart(map);//批量删除生成订单的购物车记录
+        //this.shopCartMapper.batchDeleteMyCart(map);//批量删除生成订单的购物车记录
         map.remove("list");
         map.remove("list2");
         map.put("orderNum", shopOrderGoods.get(0).getOrderNo());
@@ -351,7 +360,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     @Override
     public PageData listPageShopOrder(Page page, String versionNo) throws Exception {
-        List<PageData> list = (List<PageData>) dao.findForList("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.listPageShopOrder", page);
+        List<PageData> list = (List<PageData>) dao.findForList("com.ecochain.ledger.mapper.ShopOrderInfoMapper.listPageShopOrder", page);
         PageData tpd = new PageData();
         tpd.put("list", list);
         tpd.put("page", page);
@@ -360,16 +369,16 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     /* @Override
      public PageData getShopOrderNumByStatus(Integer user_id, String versionNo) throws Exception {
-         return (PageData)dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderStatus", user_id);
+         return (PageData)dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderStatus", user_id);
      }*/
     @Override
     public Integer getShopOrderTotalNum(Integer user_id, String versionNo) throws Exception {
-        return (Integer) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderTotalNum", user_id);
+        return (Integer) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderTotalNum", user_id);
     }
 
     @Override
     public PageData selectById(Integer order_id, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.selectById", order_id);
+        return (PageData) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.selectById", order_id);
     }
 
     @Override
@@ -403,8 +412,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 //            orderInfo.put("order_status", "3");
             boolean orderResult = updateOrderConflag(orderInfo, versionNo);
             logger.info("--------确认收货更新订单状态、物流状态--------orderResult总结果：" + orderResult);
-            /*boolean orderResult = (Integer)dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateOrderStatus", orderInfo)>0;
-            boolean orderGoodsResult = (Integer)dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateOrderGoodsStatus", orderInfo)>0;
+            /*boolean orderResult = (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateOrderStatus", orderInfo)>0;
+            boolean orderGoodsResult = (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateOrderGoodsStatus", orderInfo)>0;
             logger.info("--------确认收货更新订单状态、物流状态---------(orderResult&&orderGoodsResult)结果："+(orderResult&&orderGoodsResult));*/
             /*boolean accDetailResult = false;
             if((orderResult&&userWalletResult)){
@@ -522,22 +531,22 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     @Override
     public boolean updateShopOrderStatus(PageData pd, String versionNo) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateShopOrderStatus", pd) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateShopOrderStatus", pd) > 0;
     }
 
     @Override
     public List<PageData> getGoodsByOrderId(PageData pd, String versionNo) throws Exception {
-        return (List<PageData>) dao.findForList("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getGoodsByOrderId", pd);
+        return (List<PageData>) dao.findForList("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getGoodsByOrderId", pd);
     }
 
     @Override
     public PageData getShopOrderByOrderNo(PageData pd, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderByOrderNo", pd);
+        return (PageData) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderByOrderNo", pd);
     }
 
     @Override
     public boolean updateOrderIdByOrderNo(String order_no, String versionNo) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateOrderIdByOrderNo", order_no) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateOrderIdByOrderNo", order_no) > 0;
     }
 
     @Override
@@ -547,42 +556,42 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     @Override
     public boolean isLastShopOrder(PageData pd, String versionNo) throws Exception {
-        return (Integer) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.isLastShopOrder", pd) > 1;
+        return (Integer) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.isLastShopOrder", pd) > 1;
     }
 
     @Override
     public boolean updateStateByOrderNo(PageData pd, String versionNo) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateStateByOrderNo", pd) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateStateByOrderNo", pd) > 0;
     }
 
     @Override
     public List<PageData> getShopOrderListByConflag(String conflag, String versionNo) throws Exception {
-        return (List<PageData>) dao.findForList("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderListByConflag", conflag);
+        return (List<PageData>) dao.findForList("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderListByConflag", conflag);
     }
 
     @Override
     public boolean updateOrderConflag(PageData pd, String versionNo) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateOrderConflag", pd) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateOrderConflag", pd) > 0;
     }
 
     @Override
     public Integer getShopOrderTotalNum(PageData pd, String versionNo) throws Exception {
-        return (Integer) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderTotalNum", pd);
+        return (Integer) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderTotalNum", pd);
     }
 
     @Override
     public PageData getShopOrderNumByStatus(PageData pd, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderNumByStatus", pd);
+        return (PageData) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderNumByStatus", pd);
     }
 
     @Override
     public PageData getOneSupplierByUserId(String user_id, String versionNo) throws Exception {
-        return (PageData) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getOneSupplierByUserId", user_id);
+        return (PageData) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getOneSupplierByUserId", user_id);
     }
 
     @Override
     public PageData getShopOrderNumByStatusForSupplier(PageData pd,String versionNo) throws Exception {
-        return (PageData)dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderNumByStatusForSupplier", pd);
+        return (PageData)dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderNumByStatusForSupplier", pd);
     }
 
     @Override
@@ -594,9 +603,9 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         if(lastRefundGoods){//如果前面的商品都是支付后关闭的，需修改订单状态为关闭，有一个商品状态确认收货，订单状态都改为已完成
             refundResult = this.refundLastGoods(rec_id);
         }else{
-            refundResult = (Integer)dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.refundGoods", rec_id)>0;
+            refundResult = (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.refundGoods", rec_id)>0;
         }*/
-        boolean refundResult = (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.refundGoods", pd) > 0;
+        boolean refundResult = (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.refundGoods", pd) > 0;
         logger.info("**********商城订单退款结果refundResult：" + refundResult + "*****************");
         if (refundResult) {
             PageData accDetail = new PageData();
@@ -627,23 +636,23 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     @Override
     public boolean refundLastGoods(String rec_id) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.refundLastGoods", rec_id) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.refundLastGoods", rec_id) > 0;
     }
 
     @Override
     public boolean isLastRefundGoods(String rec_id) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.isLastRefundGoods", rec_id) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.isLastRefundGoods", rec_id) > 0;
     }
 
 
     @Override
     public boolean applyAndRefuseRefundGoods(PageData pd) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.applyAndRefuseRefundGoods", pd) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.applyAndRefuseRefundGoods", pd) > 0;
     }
 
     @Override
     public PageData getShopOrderAndUserInfo(PageData pd) throws Exception {
-        return (PageData) dao.findForObject("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.getShopOrderAndUserInfo", pd);
+        return (PageData) dao.findForObject("com.ecochain.ledger.mapper.ShopOrderInfoMapper.getShopOrderAndUserInfo", pd);
     }
 
     @Override
@@ -708,7 +717,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     @Override
     public boolean updateShopReceipt(PageData pd) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateShopReceipt", pd) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateShopReceipt", pd) > 0;
     }
 
     @Override
@@ -718,7 +727,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     @Override
     public boolean updateShopOrderStatusInfo(PageData pageData, String s) throws Exception {
-        return (Integer) dao.update("com.qkl.wlsc.provider.dao.ShopOrderInfoMapper.updateShopOrderStatusInfo", pageData) > 0;
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateShopOrderStatusInfo", pageData) > 0;
     }
 
     @Override

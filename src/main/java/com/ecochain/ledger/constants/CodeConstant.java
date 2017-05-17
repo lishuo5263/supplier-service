@@ -510,4 +510,9 @@ public interface CodeConstant {
 	 * 数据库无此商品
 	 */
 	public final short ERROR_INFO_NOT_SAME = -116;
+
+	/**
+	 * 区块链接口发生错误
+	 */
+	public final short ERROR_BLOCKCHAIN =117;
 }
