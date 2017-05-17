@@ -46,28 +46,18 @@ public class BlockChainTask {
                 JSONObject toDayBlockInfoo  =JSONObject.parseObject(Base64.getFromBase64(resultInfo.getString("data")));
                 if(Integer.valueOf(shopOrderInfoService.queryOrderNum(toDayBlockInfoo.getString("shop_order_no"))) > 0){
                     continue;
-                }else{
-
-                }
-                break;
-            }
-        }
-       /* for(int i =0;i<toDayBlockInfoList.size();i++){  //需循环list
-            if(toDayBlockInfoList.get(i)){ //这里为处理Json话后的data逻辑
-                shopOrderInfoService.queryOrderNum(""); //根据订单号查询当前系统是否处理此业务
-                if("insertOrder".equals(true)){
+                }else if("insertOrder".equals(toDayBlockInfoo.getString("bussType"))){
                     HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/api/rest/shopOrder/insertShopOrder", "insertOrder"); //insertOrder 此处值应为给区块链的data值
                     continue;
-                } else if ("deliverGoods".equals(true)) {
+                }else if("deliverGoods".equals(toDayBlockInfoo.getString("bussType"))){
                     HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/deliverGoods?shop_order_no=170517112233972312999&goods_id=1120&logistics_no=111&logistics_name=22", "deliverGoods"); //deliverGoods 此处值应为给区块链的data值
                     continue;
-                } else if ("insertOrder".equals(true)) {
+                }else if("payNow".equals(toDayBlockInfoo.getString("bussType"))){
                     HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/api/rest/shopOrder/insertShopOrder", "insertOrder"); //insertOrder 此处值应为给区块链的data值
                     continue;
                 }
             }
-        }*/
-
+        }
     }
 
 }
