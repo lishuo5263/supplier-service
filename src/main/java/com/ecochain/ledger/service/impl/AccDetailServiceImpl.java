@@ -143,21 +143,41 @@ public class AccDetailServiceImpl implements AccDetailService {
     }
 
     @Override
+    @Transactional(propagation =Propagation.REQUIRED)
     public boolean updateRechargeByHash(PageData pd, String versionNo) throws Exception {
-        // TODO Auto-generated method stub
-        return false;
+       /* if(accDetailHashSummary(pd, versionNo)){//充值账户汇总
+            //支付成功修改订单状态
+            PageData payOrder = new PageData();
+            payOrder.put("pay_no", pd.getString("pay_no"));
+            payOrder.put("bank_tradeno", pd.getString("bank_tradeno"));
+            payOrder.put("bank_tradestatus", pd.getString("bank_tradestatus"));
+            payOrder.put("confirm_time", DateUtil.getCurrDateTime());
+            payOrder.put("status", "1");//交易成功
+            payOrder.put("hashList", pd.get("hashList"));
+            boolean orderResult = payOrderService.updateStatusByHash(payOrder, versionNo);
+            logger.info("------------定时器积分充值-------------更新订单orderResult："+orderResult);
+            if(orderResult){
+              //更新账户状态
+                PageData accDetail = new PageData();
+                accDetail.put("caldate", DateUtil.getCurrDateTime());
+                accDetail.put("cntflag", "1");
+                accDetail.put("status", "6");
+                accDetail.put("hashList", pd.get("hashList"));
+                boolean updateCntflagByHash = updateCntflagByHash(accDetail, versionNo);
+                logger.error("--------定时器积分充值-------AccDetailService.updateCntflagByHash------更新账户统计标志和状态");
+            }
+        }*/
+        return true;
     }
 
     @Override
     public boolean updateCntflagByHash(PageData pd, String versionNo) throws Exception {
-        // TODO Auto-generated method stub
-        return false;
+        return (Integer)dao.update("AccDetailMapper.updateCntflagByHash", pd)>0;
     }
 
     @Override
     public boolean accDetailHashSummary(PageData pd, String versionNo) throws Exception {
-        // TODO Auto-generated method stub
-        return false;
+        return (Integer)dao.update("AccDetailMapper.accDetailHashSummary", pd)>0;
     }
 
 }

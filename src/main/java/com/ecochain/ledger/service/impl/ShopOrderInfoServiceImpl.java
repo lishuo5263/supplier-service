@@ -558,7 +558,9 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             
             PageData accDetail = new PageData();
             accDetail.put("user_id", pd.get("user_id"));
+            accDetail.put("user_type", pd.getString("user_type"));
             accDetail.put("acc_no", "05");
+            pd.put("acc_no", "05");//进区块链
             accDetail.put("wlbi_amnt", String.valueOf(pd.get("order_amount")));
             accDetail.put("future_currency", String.valueOf(pd.get("order_amount")));//区块链保存数据用
             accDetail.put("user_type", pd.getString("user_type"));
@@ -566,13 +568,18 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             accDetail.put("cntflag", "1");
             accDetail.put("status", "4");*/
             accDetail.put("status", "5");//5-审核中，6-成功，7失败
+            pd.put("status", "5");//进区块链
             accDetail.put("otherno", pd.getString("order_no"));
             accDetail.put("other_amnt", String.valueOf(pd.get("order_amount")));
             accDetail.put("other_source", "商城兑换");
+            pd.put("other_source", "商城兑换");//进区块链
             accDetail.put("operator", pd.getString("operator"));
             String good_name = shopOrderGoodsService.getOneGoodsNameByOrderNo(pd.getString("shop_order_no"));
             accDetail.put("remark1", good_name);
+            pd.put("remark1", good_name);//进区块链
             accDetail.put("create_time", DateUtil.getCurrDateTime());
+            pd.put("create_time", DateUtil.getCurrDateTime());//进区块链
+            pd.put("order_status", "2");//进区块链
             
             /*logger.info("====================生产掉动态库代码========start================");
             String seedsStr = pd.getString("seeds");
@@ -586,7 +593,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
             JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
             PageData keyPd = new PageData();
-            keyPd.put("data",Base64.getBase64((JSON.toJSONString(accDetail))));
+            keyPd.put("data",Base64.getBase64((JSON.toJSONString(pd))));
             keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
             keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
             System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
@@ -595,7 +602,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
             Map<String, Object> paramentMap =new HashMap<String, Object>();
             paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
-            paramentMap.put("data",Base64.getBase64((JSON.toJSONString(accDetail))));
+            paramentMap.put("data",Base64.getBase64((JSON.toJSONString(pd))));
             paramentMap.put("sign",signJsonObj.getString("result"));
             String result = HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_to_sys", JSON.toJSONString(paramentMap));
             JSONObject json = JSON.parseObject(result);
