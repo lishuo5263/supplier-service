@@ -186,7 +186,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
                     shopOrderGood.get(0).setShippingFee(new BigDecimal(0));
                     shopOrderGood.get(0).setIntegralMoney(new BigDecimal(0));
                     shopOrderGood.get(0).setTradeHash(user.getString("seeds"));
-                    shopOrderGood.get(0).setData(new StringBuffer(shopOrderGoods.substring(0,shopOrderGoods.length()-1)).append(",\"bussType\":\"insertOrder\"}").toString());
+                    shopOrderGood.get(0).setData(new StringBuffer(shopOrderGoods.substring(0,shopOrderGoods.length()-1)).append(",\"orderNo\":\""+shopOrderGood.get(0).getOrderNo()+"\"").append(",\"bussType\":\"insertOrder\"}").toString());
                     result = this.shopOrderInfoService.insertShopOrder(shopOrderGood);
                     if (result.get(0).get("ErrorInsert") != null) {
                         return fastReturn(result, false, "订单生成失败，goodsId参数为空！", CodeConstant.PARAM_ERROR);
@@ -857,7 +857,6 @@ public class ShopOrderInfoWebService extends BaseWebService {
 
     /**
      * @param request
-     * @param page
      * @describe:分页查询订单列表
      * @author: zhangchunming
      * @date: 2016年10月27日上午11:46:28

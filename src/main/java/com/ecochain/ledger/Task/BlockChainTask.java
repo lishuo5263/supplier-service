@@ -6,7 +6,6 @@ import com.ecochain.ledger.util.HttpTool;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,7 +23,7 @@ public class BlockChainTask {
 
     private Logger logger = Logger.getLogger(BlockChainTask.class);
 
-    @Scheduled(fixedDelay=10000)
+    //@Scheduled(fixedDelay=10000)
     public void scheduler() {
         /**
          * 1.需要调用区块链接口查出当日增量的hash数据

@@ -11,6 +11,7 @@ import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopGoods;
 import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.service.*;
+import com.ecochain.ledger.util.Base64;
 import com.ecochain.ledger.util.DateUtil;
 import com.ecochain.ledger.util.HttpUtil;
 import com.ecochain.ledger.util.StringUtil;
@@ -249,16 +250,16 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
         JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
         PageData keyPd = new PageData();
-        keyPd.put("data","data");
+        keyPd.put("data",Base64.getBase64((shopOrderGoods.get(0).getData())));
         keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
         keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
         System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
         //2. 获取公钥签名
-        String signJsonObjStr =HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_for_sign",JSON.toJSONString(keyPd));
+        String signJsonObjStr =HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_for_sign", JSON.toJSONString(keyPd));
         JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
         Map<String, Object> paramentMap =new HashMap<String, Object>();
         paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
-        paramentMap.put("data","data");
+        paramentMap.put("data",Base64.getBase64((shopOrderGoods.get(0).getData())));
         paramentMap.put("sign",signJsonObj.getString("result"));
         String result1 = HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_to_sys", JSON.toJSONString(paramentMap));
         JSONObject json = JSON.parseObject(result1);
@@ -266,7 +267,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             shopOrderGoods.get(0).setTradeHash(json.getString("result"));
         }
         logger.info("====================测试代码=======end=================");
-        /*String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), shopOrderGoods.get(0).getData());//此时TradeHash值为seeds
+
+       /* String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), Base64.getBase64(shopOrderGoods.get(0).getData()));//此时TradeHash值为seeds
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             shopOrderGoods.get(0).setTradeHash(json.getString("result"));
@@ -488,11 +490,32 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deliverGoods(PageData pd, String versionNo) throws Exception {
-        String tradeResult=qklLibService.sendDataToSys(pd.getString("seeds"), JSONObject.toJSON(pd.toString()));
+        /*String tradeResult=qklLibService.sendDataToSys(pd.getString("seeds"), Base64.getBase64(JSONObject.toJSON(pd.toString()).toString()));
         JSONObject json = JSON.parseObject(tradeResult);
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             pd.put("logistics_hash",json.getString("result"));
+        }*/
+        logger.info("====================测试代码========start================");
+        String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
+        JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
+        PageData keyPd = new PageData();
+        keyPd.put("data",Base64.getBase64((pd.toString())));
+        keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
+        System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
+        //2. 获取公钥签名
+        String signJsonObjStr =HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_for_sign", JSON.toJSONString(keyPd));
+        JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
+        Map<String, Object> paramentMap =new HashMap<String, Object>();
+        paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
+        paramentMap.put("data",Base64.getBase64((pd.toString())));
+        paramentMap.put("sign",signJsonObj.getString("result"));
+        String result1 = HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_to_sys", JSON.toJSONString(paramentMap));
+        JSONObject json = JSON.parseObject(result1);
+        if(StringUtil.isNotEmpty(json.getString("result"))){
+            pd.put("logistics_hash",json.getString("result"));
         }
+        logger.info("====================测试代码=======end=================");
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
         //修改订单商品关联表信息（添加物流单号及修改发货状态）
