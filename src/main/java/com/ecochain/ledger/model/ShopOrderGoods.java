@@ -104,6 +104,21 @@ public class ShopOrderGoods implements Serializable {
     private Date shippingTime;
 
     private String data;
+    
+    private String  bussType;
+    
+
+    public String getBussType() {
+        return bussType;
+    }
+
+    public void setBussType(String bussType) {
+        this.bussType = bussType;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
     public String getActivityId() {
         return activityId;

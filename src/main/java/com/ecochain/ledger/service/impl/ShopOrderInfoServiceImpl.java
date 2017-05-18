@@ -1,20 +1,14 @@
 package com.ecochain.ledger.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.ecochain.ledger.constants.Constant;
-import com.ecochain.ledger.dao.DaoSupport;
-import com.ecochain.ledger.mapper.*;
-import com.ecochain.ledger.model.Page;
-import com.ecochain.ledger.model.PageData;
-import com.ecochain.ledger.model.ShopGoods;
-import com.ecochain.ledger.model.ShopOrderGoods;
-import com.ecochain.ledger.service.*;
-import com.ecochain.ledger.util.Base64;
-import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.HttpUtil;
-import com.ecochain.ledger.util.StringUtil;
-import com.github.pagehelper.PageHelper;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +17,34 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ecochain.ledger.constants.Constant;
+import com.ecochain.ledger.dao.DaoSupport;
+import com.ecochain.ledger.mapper.BlockDataHashMapper;
+import com.ecochain.ledger.mapper.ShopCartMapper;
+import com.ecochain.ledger.mapper.ShopGoodsMapper;
+import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
+import com.ecochain.ledger.mapper.ShopOrderInfoMapper;
+import com.ecochain.ledger.mapper.UsersDetailsMapper;
+import com.ecochain.ledger.model.BlockDataHash;
+import com.ecochain.ledger.model.Page;
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.model.ShopGoods;
+import com.ecochain.ledger.model.ShopOrderGoods;
+import com.ecochain.ledger.service.AccDetailService;
+import com.ecochain.ledger.service.PayOrderService;
+import com.ecochain.ledger.service.QklLibService;
+import com.ecochain.ledger.service.ShopOrderGoodsService;
+import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.ShopOrderLogisticsService;
+import com.ecochain.ledger.service.UserAddressService;
+import com.ecochain.ledger.service.UserWalletService;
+import com.ecochain.ledger.util.Base64;
+import com.ecochain.ledger.util.DateUtil;
+import com.ecochain.ledger.util.HttpUtil;
+import com.ecochain.ledger.util.StringUtil;
+import com.github.pagehelper.PageHelper;
 
 @Component("shopOrderInfoService")
 public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
@@ -47,7 +63,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
 
     @Autowired
     private ShopOrderGoodsMapper shopOrderGoodsMapper;
-
+    @Autowired
+    private BlockDataHashMapper blockDataHashMapper;
     @Autowired
     private UsersDetailsMapper usersDetailsMapper;
     @Autowired
@@ -242,7 +259,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             }
         }*/
 
-        /*logger.info("====================测试代码========start================");
+       /* logger.info("====================测试代码========start================");
         String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
         JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
         PageData keyPd = new PageData();
@@ -491,7 +508,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             pd.put("logistics_hash",json.getString("result"));
         }*/
-       /* logger.info("====================测试代码========start================");
+        logger.info("====================测试代码========start================");
         String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
         JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
         PageData keyPd = new PageData();
@@ -511,7 +528,12 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         if(StringUtil.isNotEmpty(json.getString("result"))){
             pd.put("logistics_hash",json.getString("result"));
         }
-        logger.info("====================测试代码=======end=================");*/
+        logger.info("====================测试代码=======end=================");
+        BlockDataHash blockDataHash =new BlockDataHash();
+        blockDataHash.setBussType("deliverGoods");
+        blockDataHash.setDataHash( json.getString("result"));
+        blockDataHash.setBlockCreateTime(new Date());
+        this.blockDataHashMapper.insert(blockDataHash);
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
         //修改订单商品关联表信息（添加物流单号及修改发货状态）
@@ -524,107 +546,46 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     public boolean payNow(PageData pd, String versionNo) throws Exception {
         
         logger.info("-------------商城支付-----------start------------");
-        pd.put("bussTyte", "payNow");//添加业务类型
         //从账户余额扣钱到冻结余额中
-        if(userWalletService.payNowBySJT(pd, Constant.VERSION_NO)){
-            /*//修改订单状态为已支付
-            PageData shopOrder = new PageData();
-            shopOrder.put("user_id", pd.get("user_id"));
-            shopOrder.put("order_id", pd.getString("order_id"));
-            shopOrder.put("order_status", "2");
-            shopOrder.put("pay_time", DateUtil.getCurrDateTime());
-            if(!updateShopOrderStatus(shopOrder, versionNo)){
+        /*if(userWalletService.payNowBySJT(pd, Constant.VERSION_NO)){
+            //修改订单状态为已支付
+            if(!updateShopOrderStatus(pd, versionNo)){
                 logger.error("--------商城支付-------updateShopOrderStatus------更新商城订单状态  失败");
             }
             //修改订单商品关联表状态为已支付
-            PageData shopOrderGoods = new PageData();
-            shopOrderGoods.put("user_id", pd.get("user_id"));
-            shopOrderGoods.put("shop_order_id", pd.getString("order_id"));
-            shopOrderGoods.put("state", "2");
-            if(!shopOrderGoodsService.updateOrderGoodsStatus(shopOrderGoods, versionNo)){
+            if(!shopOrderGoodsService.updateOrderGoodsStatus(pd, versionNo)){
                 logger.error("--------商城支付-------shopOrderGoodsService.updateOrderGoodsStatus------更新商城订单商品关联表状态  失败");
-            }*/
-            
-            PageData accDetail = new PageData();
-            accDetail.put("user_id", pd.get("user_id"));
-            accDetail.put("user_type", pd.getString("user_type"));
-            accDetail.put("acc_no", "05");
-            pd.put("acc_no", "05");//进区块链
-            accDetail.put("wlbi_amnt", String.valueOf(pd.get("order_amount")));
-            accDetail.put("future_currency", String.valueOf(pd.get("order_amount")));//区块链保存数据用
-            accDetail.put("user_type", pd.getString("user_type"));
-            /*accDetail.put("caldate", DateUtil.getCurrDateTime());
-            accDetail.put("cntflag", "1");
-            accDetail.put("status", "4");*/
-            accDetail.put("status", "5");//5-审核中，6-成功，7失败
-            pd.put("status", "5");//进区块链
-            accDetail.put("otherno", pd.getString("order_no"));
-            accDetail.put("other_amnt", String.valueOf(pd.get("order_amount")));
-            accDetail.put("other_source", "商城兑换");
-            pd.put("other_source", "商城兑换");//进区块链
-            accDetail.put("operator", pd.getString("operator"));
-            String good_name = shopOrderGoodsService.getOneGoodsNameByOrderNo(pd.getString("shop_order_no"));
-            accDetail.put("remark1", good_name);
-            pd.put("remark1", good_name);//进区块链
-            accDetail.put("create_time", DateUtil.getCurrDateTime());
-            pd.put("create_time", DateUtil.getCurrDateTime());//进区块链
-            pd.put("order_status", "2");//进区块链
-            
-            
-            /*logger.info("====================生产掉动态库代码========start================");
-            String seedsStr = pd.getString("seeds");
-            logger.info("seeds="+seedsStr);
-            String hash = qklLibService.sendDataToSys(seedsStr, accDetail);
-            accDetail.put("hash", hash); 
-            pd.put("trade_hash", hash); 
-            logger.info("====================生产掉动态库代码=======end=================");*/
-            
-            logger.info("====================测试代码========start================");
-            String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
-            JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
-            PageData keyPd = new PageData();
-            keyPd.put("data",Base64.getBase64((JSON.toJSONString(pd))));
-            keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
-            keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
-            System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
-            //2. 获取公钥签名
-            String signJsonObjStr =HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_for_sign",JSON.toJSONString(keyPd));
-            JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
-            Map<String, Object> paramentMap =new HashMap<String, Object>();
-            paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
-            paramentMap.put("data",Base64.getBase64((JSON.toJSONString(pd))));
-            paramentMap.put("sign",signJsonObj.getString("result"));
-            String result = HttpUtil.sendPostData("http://192.168.200.81:8332/send_data_to_sys", JSON.toJSONString(paramentMap));
-            JSONObject json = JSON.parseObject(result);
-            if(StringUtil.isNotEmpty(json.getString("result"))){
-                accDetail.put("hash", json.getString("result")); 
-                pd.put("trade_hash", json.getString("result")); 
             }
-            logger.info("====================测试代码=======end=================");
             
-            
-            
-            
-            boolean accDetailResult = accDetailService.insertSelective(accDetail, Constant.VERSION_NO);
+            boolean accDetailResult = accDetailService.insertSelective(pd, Constant.VERSION_NO);
             logger.info("--------商城兑换插入账户流水---------accDetailResult结果："+accDetailResult);
             
-            PageData tshopOrder = new PageData();
-            tshopOrder.put("order_no", pd.getString("order_no"));
-            tshopOrder.put("trade_hash", pd.getString("trade_hash"));
-            tshopOrder.put("order_status", "10");//支付处理中
-            boolean updateOrderHashResult = updateOrderHashByOrderNo(tshopOrder);
+            boolean updateOrderHashResult = updateOrderHashByOrderNo(pd);
             logger.info("--------商城兑换订单更新hash值---------updateOrderHashResult结果："+updateOrderHashResult);
-            //解锁订单
-            boolean unLockOrderByOrderNo = unLockOrderByOrderNo(pd);
-            logger.info("支付订单解锁结果unLockOrderByOrderNo："+unLockOrderByOrderNo);
             
             logger.info("-------------商城支付-----------end------------");
             return true;
         }else{
             logger.error("--------商城支付-------userWalletService.payNowBySJT------从账户余额扣钱到冻结余额中  失败");
+        }*/
+        
+        if(!updateShopOrderStatus(pd, versionNo)){
+            logger.error("--------商城支付-------updateShopOrderStatus------更新商城订单状态  失败");
+        }
+        //修改订单商品关联表状态为已支付
+        if(!shopOrderGoodsService.updateOrderGoodsStatus(pd, versionNo)){
+            logger.error("--------商城支付-------shopOrderGoodsService.updateOrderGoodsStatus------更新商城订单商品关联表状态  失败");
         }
         
-        return false;
+        boolean accDetailResult = accDetailService.insertSelective(pd, Constant.VERSION_NO);
+        logger.info("--------商城兑换插入账户流水---------accDetailResult结果："+accDetailResult);
+        
+        boolean updateOrderHashResult = updateOrderHashByOrderNo(pd);
+        logger.info("--------商城兑换订单更新hash值---------updateOrderHashResult结果："+updateOrderHashResult);
+        
+        logger.info("-------------商城支付-----------end------------");
+        return true;
+        
     }
     
     @Override
@@ -951,7 +912,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
      * @return: String
      */
     @Override
-    public String queryOrderNum(String orderNum) {
+    public Integer queryOrderNum(String orderNum) {
         return this.shopOrderInfoMapper.queryOrderNum(orderNum);
     }
 }
