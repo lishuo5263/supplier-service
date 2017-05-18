@@ -242,7 +242,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             }
         }*/
 
-        logger.info("====================测试代码========start================");
+        /*logger.info("====================测试代码========start================");
         String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
         JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
         PageData keyPd = new PageData();
@@ -262,7 +262,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         if(StringUtil.isNotEmpty(json.getString("result"))){
             shopOrderGoods.get(0).setTradeHash(json.getString("result"));
         }
-        logger.info("====================测试代码=======end=================");
+        logger.info("====================测试代码=======end=================");*/
 
        /* String tradeResult=qklLibService.sendDataToSys(shopOrderGoods.get(0).getTradeHash(), Base64.getBase64(shopOrderGoods.get(0).getData()));//此时TradeHash值为seeds
         JSONObject json = JSON.parseObject(tradeResult);
@@ -491,7 +491,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
             pd.put("logistics_hash",json.getString("result"));
         }*/
-        logger.info("====================测试代码========start================");
+       /* logger.info("====================测试代码========start================");
         String jsonStr = HttpUtil.sendPostData("http://192.168.200.81:8332/get_new_key", "");
         JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
         PageData keyPd = new PageData();
@@ -511,7 +511,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         if(StringUtil.isNotEmpty(json.getString("result"))){
             pd.put("logistics_hash",json.getString("result"));
         }
-        logger.info("====================测试代码=======end=================");
+        logger.info("====================测试代码=======end=================");*/
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
         //修改订单商品关联表信息（添加物流单号及修改发货状态）
