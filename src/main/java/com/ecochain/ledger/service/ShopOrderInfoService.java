@@ -380,14 +380,14 @@ public interface ShopOrderInfoService {
      */
     boolean updateShopReceipt(PageData pd)throws Exception;
     /**
-     * @describe:更新hash值
+     * @describe:更新订单状态值
      * @author: zhangchunming
      * @date: 2017年3月17日下午5:54:13
      * @param pd
      * @throws Exception
      * @return: boolean
      */
-    boolean updateOrderHashByOrderNo(PageData pd)throws Exception;
+    boolean updateOrderStatusByOrderNo(PageData pd)throws Exception;
     /**
      * @describe:根据订单号锁定订单
      * @author: zhangchunming
