@@ -1,6 +1,8 @@
 package com.ecochain.ledger.task;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +84,10 @@ public class SupplierBlockChainTask {
                 if(blockDataHashService.isExistDataHash(hash) < 1){
                     if("insertOrder".equals(data.getString("bussType"))){
                         HttpTool.doPost("http://localhost:"+servicePort+"/"+serviceName+"/api/rest/shopOrder/insertShopOrder", data.toJSONString());
+                        Map updateMap =new HashMap();
+                        updateMap.put("trade_hash" ,resultInfo.getString("hash"));
+                        updateMap.put("order_no" ,data.getString("orderNo"));
+                        shopOrderInfoService.updateHashByOrderNo(updateMap);
                         this.blockDataHashService.insert(blockDataHash);
                     }else if("deliverGoods".equals(data.getString("bussType"))){
                         HttpTool.doGet("http://localhost:"+servicePort+"/"+serviceName+"/deliverGoods?shop_order_no="+data.getString("shop_order_no") +"&goods_id="+data.getString("goods_id") +"&logistics_no="+data.getString("logistics_no") +"&logistics_name="+data.getString("logistics_name") +"");

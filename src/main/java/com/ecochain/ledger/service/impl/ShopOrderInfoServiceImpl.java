@@ -549,16 +549,17 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
         
         if(updateShopOrderStatus(pd, versionNo)){
             //修改订单商品关联表状态为已支付
-            if(!shopOrderGoodsService.updateOrderGoodsStatus(pd, versionNo)){
+            if(shopOrderGoodsService.updateOrderGoodsStatus(pd, versionNo)){
+                return true;
+            }else{
                 logger.error("--------卖家订单支付同步-------shopOrderGoodsService.updateOrderGoodsStatus------更新商城订单商品关联表状态  失败");
             }
         }
-        
         /*boolean accDetailResult = accDetailService.insertSelective(pd, Constant.VERSION_NO);
         logger.info("--------商城兑换插入账户流水---------accDetailResult结果："+accDetailResult);*/
         
         logger.info("-------------卖家订单支付同步-----------end------------");
-        return true;
+        return false;
         
     }
     
@@ -888,5 +889,10 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     public Integer queryOrderNum(String orderNum) {
         return this.shopOrderInfoMapper.queryOrderNum(orderNum);
+    }
+    
+    @Override
+    public boolean updateHashByOrderNo(Map updateMap) {
+        return this.shopOrderInfoMapper.updateHashByOrderNo(updateMap);
     }
 }

@@ -48,4 +48,5 @@ public interface ShopOrderInfoMapper {
     String querySimpleGoodsInfo(String orderNum);
 
     Integer queryOrderNum(String orderNum);
+    boolean updateHashByOrderNo(Map updateMap);
 }
