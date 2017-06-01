@@ -1,8 +1,11 @@
 package com.ecochain.ledger.service.impl;
 
+import java.util.List;
+
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.service.ShopOrderLogisticsService;
+
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -41,6 +44,11 @@ public class ShopOrderLogisticsServiceImpl implements ShopOrderLogisticsService 
     @Override
     public boolean updateById(PageData pd, String versionNo) throws Exception {
         return (Integer)dao.update("com.ecochain.ledger.mapper.ShopOrderLogisticsMapper.updateById", pd)>0;
+    }
+
+    @Override
+    public List<PageData> getLogistics(PageData pd) throws Exception {
+        return (List<PageData>)dao.findForList("com.ecochain.ledger.mapper.ShopOrderLogisticsMapper.getLogistics", pd);
     }
 
 }

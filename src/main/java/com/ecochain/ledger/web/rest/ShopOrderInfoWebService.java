@@ -35,6 +35,7 @@ import com.ecochain.ledger.model.ShopOrderGoods;
 import com.ecochain.ledger.service.ShopGoodsService;
 import com.ecochain.ledger.service.ShopOrderGoodsService;
 import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.ShopOrderLogisticsService;
 import com.ecochain.ledger.service.ShopSupplierService;
 import com.ecochain.ledger.service.SysGenCodeService;
 import com.ecochain.ledger.service.UserWalletService;
@@ -72,6 +73,8 @@ public class ShopOrderInfoWebService extends BaseWebService {
     private StoreOrderInfoService storeOrderInfoService;*/
     @Autowired
     private ShopSupplierService shopSupplierService;
+    @Autowired
+    private ShopOrderLogisticsService shopOrderLogisticsService;
     /*@Autowired
     private StoreInfoService storeInfoService;*/
 
@@ -1295,9 +1298,9 @@ public class ShopOrderInfoWebService extends BaseWebService {
         return ar;
     }
 */
-    //@LoginVerify
+    @LoginVerify
     @RequestMapping(value = "/deliverGoods", method = RequestMethod.GET)
-    @ApiOperation(nickname = "deliverGoods", value = "物流确认发货", notes = "物流确认发货！！")
+    @ApiOperation(nickname = "deliverGoods", value = "物流发货", notes = "物流发货！！")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shop_order_no", value = "订单号", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "goods_id", value = "商品ID", required = true, paramType = "query", dataType = "String"),
@@ -1308,9 +1311,6 @@ public class ShopOrderInfoWebService extends BaseWebService {
     public AjaxResponse deliverGoods(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
-            /*String key = RequestUtils.getCookieValueByKey(CookieConstant.CSESSIONID, request, response);
-            String userstr = SessionUtil.getAttibuteForUser(key);*/
-
 
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             logger.info("sessionKey中用户信息------------>"+userstr);
@@ -1483,9 +1483,14 @@ public class ShopOrderInfoWebService extends BaseWebService {
      * @date: 2016年11月14日下午3:39:04
      * @return: AjaxResponse
      */
+    
     @LoginVerify
     @RequestMapping(value = "/getShopOrderByOrderNo", method = RequestMethod.POST)
-
+    @ApiOperation(nickname = "根据订单号查询订单信息", value = "根据订单号查询订单信息", notes = "根据订单号查询订单信息！")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "order_no", value = "订单号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "CSESSIONID", value = "CSESSIONID", required = false, paramType = "query", dataType = "String")
+    })
     public AjaxResponse getShopOrderByOrderNo(HttpServletRequest request) {
         Map<String, Object> data = new HashMap<String, Object>();
         AjaxResponse ar = new AjaxResponse();
@@ -1503,6 +1508,55 @@ public class ShopOrderInfoWebService extends BaseWebService {
             }
             PageData shopOrderInfo = shopOrderInfoService.getShopOrderByOrderNo(pd, Constant.VERSION_NO);
             data.put("shopOrderInfo", shopOrderInfo);
+            ar.setData(data);
+            ar.setSuccess(true);
+            ar.setMessage("查询成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ar.setSuccess(false);
+            ar.setMessage("网络繁忙，请稍候重试！");
+            ar.setErrorCode(CodeConstant.SYS_ERROR);
+        }
+        return ar;
+    }
+    
+    /**
+     * @describe:查询物流信息
+     * @author: zhangchunming
+     * @date: 2017年6月1日下午3:40:03
+     * @param request
+     * @return: AjaxResponse
+     */
+    @LoginVerify
+    @RequestMapping(value = "/getLogistics", method = RequestMethod.POST)
+    @ApiOperation(nickname = "查询物流信息", value = "查询物流信息", notes = "查询物流信息！")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shop_order_no", value = "订单号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "logistics_no", value = "物流号", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "CSESSIONID", value = "CSESSIONID", required = false, paramType = "query", dataType = "String")
+    })
+    public AjaxResponse getLogistics(HttpServletRequest request) {
+        Map<String, Object> data = new HashMap<String, Object>();
+        AjaxResponse ar = new AjaxResponse();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        try {
+//            String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
+//            JSONObject user = JSONObject.parseObject(userstr);
+            if (StringUtil.isEmpty(pd.getString("shop_order_no"))) {
+                ar.setSuccess(false);
+                ar.setMessage("请输入订单号");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            if (StringUtil.isEmpty(pd.getString("logistics_no"))) {
+                ar.setSuccess(false);
+                ar.setMessage("请输入物流单号");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            List<PageData> logisticsList = shopOrderLogisticsService.getLogistics(pd);
+            data.put("list", logisticsList);
             ar.setData(data);
             ar.setSuccess(true);
             ar.setMessage("查询成功！");
