@@ -55,7 +55,9 @@
       <if test="logistics_name != null" >
         #{logistics_name,jdbcType=VARCHAR},
       </if>
-        now(),
+      <if test="createtime != null" >
+        #{createtime},
+      </if>
       <if test="logistics_hash != null" >
         #{logistics_hash,jdbcType=VARCHAR},
       </if>
