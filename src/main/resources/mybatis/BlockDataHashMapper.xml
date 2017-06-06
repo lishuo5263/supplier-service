@@ -30,7 +30,7 @@
       block_height, block_create_time, data_create_time, 
       buss_type, sys_code)
     values (#{dataHash,jdbcType=VARCHAR}, #{blockHash,jdbcType=VARCHAR}, 
-      #{blockHeight,jdbcType=INTEGER}, #{blockCreateTime,jdbcType=TIMESTAMP}, #{dataCreateTime,jdbcType=TIMESTAMP}, 
+      #{blockHeight,jdbcType=INTEGER}, #{blockCreateTime}, #{dataCreateTime}, 
       #{bussType,jdbcType=VARCHAR}, #{sysCode,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.ecochain.ledger.model.BlockDataHash" >
@@ -69,10 +69,10 @@
         #{blockHeight,jdbcType=INTEGER},
       </if>
       <if test="blockCreateTime != null" >
-        #{blockCreateTime,jdbcType=TIMESTAMP},
+        #{blockCreateTime},
       </if>
       <if test="dataCreateTime != null" >
-        #{dataCreateTime,jdbcType=TIMESTAMP},
+        #{dataCreateTime},
       </if>
       <if test="bussType != null" >
         #{bussType,jdbcType=VARCHAR},
