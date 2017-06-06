@@ -17,7 +17,7 @@ public class DateUtil {
 
 	private final static SimpleDateFormat sdfTime = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
-
+	
 	public static String getCurrDateTime()
 	{
 		/*java.sql.Timestamp date = new java.sql.Timestamp(System.currentTimeMillis());
@@ -25,7 +25,22 @@ public class DateUtil {
 		return formatter.format(date);*/
 		return sdfTime.format(new Date());
 	}
-
+	
+	/**
+     * 格式化日期
+     * @param date
+     * @return
+     */
+    public static Date fomatDateDetail(String date) {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            return fmt.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
 	/**
 	 * 获取YYYY格式
 	 * 
