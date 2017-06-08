@@ -115,4 +115,9 @@
       modify_time = #{modifyTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+    <select id="findLogisticsInfoByOrderNo" resultType="map" parameterType="java.lang.String">
+        select sol.logistics_no
+        from shop_order_logistics sol
+        where  sol.shop_order_no=#{orderNo} limit 1
+    </select>
 </mapper>

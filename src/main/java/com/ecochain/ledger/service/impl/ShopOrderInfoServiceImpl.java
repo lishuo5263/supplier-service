@@ -26,6 +26,7 @@ import com.ecochain.ledger.mapper.ShopCartMapper;
 import com.ecochain.ledger.mapper.ShopGoodsMapper;
 import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
 import com.ecochain.ledger.mapper.ShopOrderInfoMapper;
+import com.ecochain.ledger.mapper.ShopOrderLogisticsDetailMapper;
 import com.ecochain.ledger.mapper.UsersDetailsMapper;
 import com.ecochain.ledger.model.BlockDataHash;
 import com.ecochain.ledger.model.Page;
@@ -37,6 +38,7 @@ import com.ecochain.ledger.service.PayOrderService;
 import com.ecochain.ledger.service.QklLibService;
 import com.ecochain.ledger.service.ShopOrderGoodsService;
 import com.ecochain.ledger.service.ShopOrderInfoService;
+import com.ecochain.ledger.service.ShopOrderLogisticsDetailService;
 import com.ecochain.ledger.service.ShopOrderLogisticsService;
 import com.ecochain.ledger.service.SysGenCodeService;
 import com.ecochain.ledger.service.UserAddressService;
@@ -85,6 +87,11 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Autowired
     private SysGenCodeService sysGenCodeService;
 
+    @Autowired
+    private ShopOrderLogisticsDetailMapper shopOrderLogisticsDetailMapper;
+    @Autowired
+    private ShopOrderLogisticsDetailService shopOrderLogisticsDetailService;
+    
     @Override
     public boolean updateOrderRefundStatus(String orderNo) {
         boolean res1 = shopOrderInfoMapper.updateOrderGoodsRefundStatus(orderNo);
@@ -607,7 +614,17 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean updateStateByOrderNo(PageData pd, String versionNo) throws Exception {
+        logger.info("====================确认收货新加物流信息=======start=================");
+        Map infoMap=shopOrderLogisticsDetailMapper.findLogisticsInfoByOrderNo(pd.getString("shop_order_no"));
+        pd.put("logistics_no", infoMap.get("logistics_no"));
+        //pd.put("logistics_msg", pd.getString("user_name")+"确认收货");
+        pd.put("logistics_msg", "确认收货");
+        pd.put("logistics_detail_hash", pd.getString("confirm_receipt_hash"));
+        if(shopOrderLogisticsDetailService.transferLogisticsWithOutBlockChain(pd, Constant.VERSION_NO)){
+            logger.info("====================确认收货新加物流信息=======end=================");
+        }
         return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateStateByOrderNo", pd) > 0;
     }
 
