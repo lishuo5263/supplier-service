@@ -1601,6 +1601,8 @@ public class ShopOrderInfoWebService extends BaseWebService {
             pd.put("shop_order_no", order_no);
             pd.put("bussType", "confirmReceipt");
             pd.put("user_id", pd.getString("user_id"));
+            pd.put("create_time", pd.getString("create_time"));
+            pd.put("user_name", pd.getString("user_name"));
             PageData orderGoods = shopOrderGoodsService.getOrderGoods(pd, Constant.VERSION_NO);
             if (orderGoods == null) {
                 return fastReturn("订单不存在",false,"订单不存在",CodeConstant.ORDER_NO_EXISTS);
