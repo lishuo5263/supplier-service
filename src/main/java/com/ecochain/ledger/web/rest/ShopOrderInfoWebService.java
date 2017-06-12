@@ -1317,7 +1317,7 @@ public class ShopOrderInfoWebService extends BaseWebService {
             JSONObject user = JSONObject.parseObject(userstr);
             PageData pd = new PageData();
             pd = this.getPageData();
-            
+            pd.remove("CSESSIONID");
             pd.put("user_name", user.getString("user_name"));
             pd.put("create_time", DateUtil.getCurrDateTime());
             if (StringUtil.isEmpty(pd.getString("shop_order_no"))) {
