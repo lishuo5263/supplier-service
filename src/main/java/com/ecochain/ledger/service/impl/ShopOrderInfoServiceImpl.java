@@ -585,18 +585,7 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     
     @Override
     public boolean updateShopOrderStatus(PageData pd, String versionNo) throws Exception {
-        logger.info("====================确认收货新加物流信息=======start=================");
-        Map infoMap=shopOrderLogisticsDetailMapper.findLogisticsInfoByOrderNo(pd.getString("shop_order_no"));
-        pd.put("logistics_no", infoMap.get("logistics_no"));
-        //put("logistics_msg", pd.getString("user_name")+"确认收货");
-        System.out.println(pd.getString("user_name")+"确认收货");
-        pd.put("logistics_msg", "确认收货");
-        pd.put("logistics_detail_hash", pd.getString("hash"));
-        if(shopOrderLogisticsDetailService.transferLogisticsWithOutBlockChain(pd, Constant.VERSION_NO)){
-            logger.info("====================确认收货新加物流信息=======end=================");
-        }
-        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateStateByOrderNo", pd) > 0;
-
+        return (Integer) dao.update("com.ecochain.ledger.mapper.ShopOrderInfoMapper.updateShopOrderStatus", pd) > 0;
     }
 
     @Override
