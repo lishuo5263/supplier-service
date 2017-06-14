@@ -98,7 +98,7 @@ public class ShopOrderLogisticsDetailServiceImpl implements ShopOrderLogisticsDe
         shopOrderLogisticsDetail.setCreateTime(DateUtil.fomatDateDetail(pd.getString("create_time")));
         this.shopOrderLogisticsDetailService.insertSelective(shopOrderLogisticsDetail);
         if("transferLogistics".equals(pd.getString("type"))){
-            this.shopOrderInfoMapper.updateOrderStatusByOrderNo2(pd.getString("shop_order_no"));
+            this.shopOrderInfoMapper.updateOrderStatusByOrderNo(pd.getString("shop_order_no"));
         }
         logger.info("====================测试代码=======end=================");
         return true;
@@ -112,7 +112,13 @@ public class ShopOrderLogisticsDetailServiceImpl implements ShopOrderLogisticsDe
         shopOrderLogisticsDetail.setLogisticsDetailHash(pd.getString("logistics_detail_hash"));
         shopOrderLogisticsDetail.setCreateTime(DateUtil.fomatDateDetail(pd.getString("create_time")));
         this.shopOrderLogisticsDetailService.insertSelective(shopOrderLogisticsDetail);
-        this.shopOrderInfoMapper.updateOrderStatusByOrderNo2(pd.get("shop_order_no").toString());
+//        this.shopOrderInfoMapper.updateOrderStatusByOrderNo2(pd.get("shop_order_no").toString());
+        if("transferLogistics".equals(pd.getString("type"))){
+            this.shopOrderInfoMapper.updateOrderStatusByOrderNo(pd.getString("shop_order_no"));
+        }else{
+            pd.put("order_status","8");
+            this.shopOrderInfoMapper.updateOrderStatusByOrderNo2(pd);
+        }
         return true;
     }
 }

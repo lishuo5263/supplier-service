@@ -1,10 +1,11 @@
 package com.ecochain.ledger.mapper;
 
-import com.ecochain.ledger.model.ShopOrderGoods;
-import com.ecochain.ledger.model.ShopOrderInfo;
-
 import java.util.List;
 import java.util.Map;
+
+import com.ecochain.ledger.model.PageData;
+import com.ecochain.ledger.model.ShopOrderGoods;
+import com.ecochain.ledger.model.ShopOrderInfo;
 
 public interface ShopOrderInfoMapper {
     int deleteByPrimaryKey(Integer orderId);
@@ -49,5 +50,7 @@ public interface ShopOrderInfoMapper {
 
     Integer queryOrderNum(String orderNum);
     boolean updateHashByOrderNo(Map updateMap);
-    boolean updateOrderStatusByOrderNo2(String orderNo);
+    boolean updateOrderStatusByOrderNo(String orderNo);
+    
+    boolean updateOrderStatusByOrderNo2(PageData pd);
 }

@@ -822,4 +822,15 @@
     where 1=1
     and order_no = #{order_no}
   </select>
+  
+   <update id="updateOrderStatusByOrderNo2" parameterType="com.ecochain.ledger.model.PageData">
+    update shop_order_info
+    <set >
+      <if test="order_status != null" >
+        order_status = #{order_status}
+      </if>
+    </set>
+    where order_no = #{order_no}
+  </update>
+  
 </mapper>
