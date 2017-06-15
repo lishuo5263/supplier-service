@@ -830,7 +830,7 @@
         order_status = #{order_status}
       </if>
     </set>
-    where order_no = #{order_no}
+    where order_no = #{shop_order_no}
   </update>
   
 </mapper>
