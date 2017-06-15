@@ -50,7 +50,7 @@ public interface ShopOrderInfoMapper {
 
     Integer queryOrderNum(String orderNum);
     boolean updateHashByOrderNo(Map updateMap);
-    boolean updateOrderStatusByOrderNo(String orderNo);
+    boolean updateOrderStatusByOrderNo2(String orderNo);
     
-    boolean updateOrderStatusByOrderNo2(PageData pd);
+    boolean updateOrderStatusByOrderNo3(PageData pd);
 }
