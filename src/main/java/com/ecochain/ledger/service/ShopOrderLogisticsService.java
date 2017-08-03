@@ -19,4 +19,5 @@ public interface ShopOrderLogisticsService {
     boolean updateById(PageData pd,String versionNo) throws Exception;
     
     List<PageData> getLogistics(PageData pd) throws Exception;
+    
 }

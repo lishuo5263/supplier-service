@@ -1311,12 +1311,12 @@ public class ShopOrderInfoWebService extends BaseWebService {
     public AjaxResponse deliverGoods(HttpServletRequest request) {
         AjaxResponse ar = new AjaxResponse();
         try {
-
             String userstr = SessionUtil.getAttibuteForUser(RequestUtils.getRequestValue(CookieConstant.CSESSIONID, request));
             logger.info("sessionKey中用户信息------------>"+userstr);
             JSONObject user = JSONObject.parseObject(userstr);
             PageData pd = new PageData();
             pd = this.getPageData();
+            logger.info("--------供应商发货---deliverGoods---------pd value is "+pd.toString());
             pd.remove("CSESSIONID");
             pd.put("user_name", user.getString("user_name"));
             pd.put("create_time", DateUtil.getCurrDateTime());
@@ -1344,6 +1344,15 @@ public class ShopOrderInfoWebService extends BaseWebService {
                 ar.setErrorCode(CodeConstant.PARAM_ERROR);
                 return ar;
             }
+            
+            List<PageData> logistics = shopOrderLogisticsService.getLogistics(pd);
+            if(logistics !=null && logistics.size()>0){
+                ar.setSuccess(false);
+                ar.setMessage("您已发货！");
+                ar.setErrorCode(CodeConstant.PARAM_ERROR);
+                return ar;
+            }
+            
             PageData shopOrder = shopOrderGoodsService.getOrderGoods(pd, Constant.VERSION_NO);
             if (shopOrder == null) {
                 ar.setMessage("商品订单关联表中不存在该条信息！");
