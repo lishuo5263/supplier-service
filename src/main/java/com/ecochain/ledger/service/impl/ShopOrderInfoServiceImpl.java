@@ -558,14 +558,14 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
             FabricBlockInfo fabricBlockInfo = new FabricBlockInfo();
             fabricBlockInfo.setFabricBlockHash(block_info_obj.getJSONObject("header").getString("data_hash"));
             fabricBlockInfo.setFabricBlockHeight(String.valueOf(block_height));
-            fabricBlockInfo.setFabricHash(Base64.getBase64(fabrickInfo)); //fabric uuid
+            fabricBlockInfo.setFabricHash(fabrickInfo); //fabric uuid
             fabricBlockInfo.setFabricUuid(uuid); //java
             fabricBlockInfo.setHashData(data);
             fabricBlockInfo.setFabricBussType(bussType);
             fabricBlockInfo.setCreateTime(new Date());
             fabricBlockInfoMapper.insert(fabricBlockInfo);
             
-            pd.put("logistics_hash",Base64.getBase64(fabrickInfo));
+            pd.put("logistics_hash",fabrickInfo);
         }
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
