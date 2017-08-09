@@ -1,5 +1,7 @@
 package com.ecochain.ledger.service.impl;
 
+import static com.ecochain.ledger.util.HttpTool.doPost;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,13 +24,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.ecochain.ledger.constants.Constant;
 import com.ecochain.ledger.dao.DaoSupport;
 import com.ecochain.ledger.mapper.BlockDataHashMapper;
+import com.ecochain.ledger.mapper.FabricBlockInfoMapper;
 import com.ecochain.ledger.mapper.ShopCartMapper;
 import com.ecochain.ledger.mapper.ShopGoodsMapper;
 import com.ecochain.ledger.mapper.ShopOrderGoodsMapper;
 import com.ecochain.ledger.mapper.ShopOrderInfoMapper;
 import com.ecochain.ledger.mapper.ShopOrderLogisticsDetailMapper;
 import com.ecochain.ledger.mapper.UsersDetailsMapper;
-import com.ecochain.ledger.model.BlockDataHash;
+import com.ecochain.ledger.model.FabricBlockInfo;
 import com.ecochain.ledger.model.Page;
 import com.ecochain.ledger.model.PageData;
 import com.ecochain.ledger.model.ShopGoods;
@@ -45,8 +48,9 @@ import com.ecochain.ledger.service.UserAddressService;
 import com.ecochain.ledger.service.UserWalletService;
 import com.ecochain.ledger.util.Base64;
 import com.ecochain.ledger.util.DateUtil;
-import com.ecochain.ledger.util.HttpUtil;
+import com.ecochain.ledger.util.HttpTool;
 import com.ecochain.ledger.util.StringUtil;
+import com.ecochain.ledger.util.UuidUtil;
 import com.github.pagehelper.PageHelper;
 
 @Component("shopOrderInfoService")
@@ -91,6 +95,8 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     private ShopOrderLogisticsDetailMapper shopOrderLogisticsDetailMapper;
     @Autowired
     private ShopOrderLogisticsDetailService shopOrderLogisticsDetailService;
+    @Autowired
+    private FabricBlockInfoMapper fabricBlockInfoMapper;
     
     @Override
     public boolean updateOrderRefundStatus(String orderNo) {
@@ -513,46 +519,53 @@ public class ShopOrderInfoServiceImpl implements ShopOrderInfoService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deliverGoods(PageData pd, String versionNo) throws Exception {
-        /*String tradeResult=qklLibService.sendDataToSys(pd.getString("seeds"), Base64.getBase64(JSONObject.toJSON(pd.toString()).toString()));
-        JSONObject json = JSON.parseObject(tradeResult);
-        if(StringUtil.isNotEmpty(json.getString("result"))&&!json.getString("result").contains("failure")){
-            pd.put("logistics_hash",json.getString("result"));
-        }*/
-        String kql_url=null;
-        List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
-        for(PageData mapObj:codeList){
-            if("QKL_URL".equals(mapObj.get("code_name"))){
-                kql_url = mapObj.get("code_value").toString();
-            }
-        }
-        JSONObject json =null;
         if(StringUtil.isEmpty(pd.getString("logistics_hash"))){
             logger.info("====================测试代码========start================");
-            String jsonStr = HttpUtil.sendPostData(""+ kql_url+"/get_new_key", "");
-            JSONObject keyJsonObj = JSONObject.parseObject(jsonStr);
-            PageData keyPd = new PageData();
-            keyPd.put("data",Base64.getBase64((JSON.toJSONString(pd))));
-            keyPd.put("publicKey",keyJsonObj.getJSONObject("result").getString("publicKey"));
-            keyPd.put("privateKey",keyJsonObj.getJSONObject("result").getString("privateKey"));
-            System.out.println("keyPd value is ------------->"+JSON.toJSONString(keyPd));
-            //2. 获取公钥签名
-            String signJsonObjStr =HttpUtil.sendPostData(""+ kql_url+"/send_data_for_sign", JSON.toJSONString(keyPd));
-            JSONObject signJsonObj = JSONObject.parseObject(signJsonObjStr);
-            Map<String, Object> paramentMap =new HashMap<String, Object>();
-            paramentMap.put("publickey",keyJsonObj.getJSONObject("result").getString("publicKey"));
-            paramentMap.put("data",Base64.getBase64((JSON.toJSONString(pd))));
-            paramentMap.put("sign",signJsonObj.getString("result"));
-            String result1 = HttpUtil.sendPostData(""+ kql_url+"/send_data_to_sys", JSON.toJSONString(paramentMap));
-            json = JSON.parseObject(result1);
-            if(StringUtil.isNotEmpty(json.getString("result"))){
-                pd.put("logistics_hash",json.getString("result"));
+            String kql_url =null;
+            List<PageData> codeList =sysGenCodeService.findByGroupCode("QKL_URL", Constant.VERSION_NO);
+            for(PageData mapObj:codeList){
+                if("QKL_URL".equals(mapObj.get("code_name"))){
+                    kql_url = mapObj.get("code_value").toString();
+                }
             }
-            logger.info("====================测试代码=======end=================");
-            BlockDataHash blockDataHash =new BlockDataHash();
-            blockDataHash.setBussType("deliverGoods");
-            blockDataHash.setDataHash(StringUtil.isEmpty(json.getString("result"))== true ? pd.getString("logistics_hash") :json.getString("result"));
-            blockDataHash.setBlockCreateTime(new Date());
-            this.blockDataHashMapper.insert(blockDataHash);
+            
+            logger.info("====================调用fabric测试代码=======start=================");
+            String uuid = UuidUtil.get32UUID();
+            String bussType="deliverGoods";
+            String data = JSON.toJSONString(pd);
+            String dataBase64 = Base64.getBase64(data).replace("\n","").replace("\r","");
+            StringBuffer stringBuffer = new StringBuffer("{\n" +
+                    "    \"fcn\":\"createObj\",\n" +
+                    "    \"args\":[\n" +
+                    "        \""+uuid+"\",\n" +
+                    "        \""+bussType+"\",\n" +
+                    "\""+dataBase64+"\"\n" +
+                    "    ]\n" +
+                    "}");
+            System.out.println("json信息为------------------>"+data);
+            String fabrickInfo = doPost(kql_url+"/createObj", stringBuffer.toString());
+            String block_height_str = HttpTool.doGet(kql_url+"/channel/height");
+            String low = JSONObject.parseObject(block_height_str).getString("low");
+            int block_height = (Integer.valueOf(low)-1);
+            String block_info = HttpTool.doGet(kql_url+"/channel/blocks/"+block_height);
+            while(!block_info.contains(fabrickInfo)){
+                --block_height;
+                block_info = HttpTool.doGet(kql_url+"/channel/blocks/"+block_height);
+            }
+            logger.info("====================调用fabric接口返回为=========================" + fabrickInfo);
+            logger.info("====================调用fabric测试代码=======end=================");
+            JSONObject block_info_obj = JSONObject.parseObject(block_info);
+            FabricBlockInfo fabricBlockInfo = new FabricBlockInfo();
+            fabricBlockInfo.setFabricBlockHash(block_info_obj.getJSONObject("header").getString("data_hash"));
+            fabricBlockInfo.setFabricBlockHeight(String.valueOf(block_height));
+            fabricBlockInfo.setFabricHash(Base64.getBase64(fabrickInfo)); //fabric uuid
+            fabricBlockInfo.setFabricUuid(uuid); //java
+            fabricBlockInfo.setHashData(data);
+            fabricBlockInfo.setFabricBussType(bussType);
+            fabricBlockInfo.setCreateTime(new Date());
+            fabricBlockInfoMapper.insert(fabricBlockInfo);
+            
+            pd.put("logistics_hash",Base64.getBase64(fabrickInfo));
         }
         //添加物流信息
         shopOrderLogisticsService.insertSelective(pd, Constant.VERSION_NO);
