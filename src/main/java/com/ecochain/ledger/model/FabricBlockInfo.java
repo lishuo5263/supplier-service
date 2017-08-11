@@ -39,7 +39,7 @@ public class FabricBlockInfo {
     public void setFabricBlockHash(String fabricBlockHash) {
         this.fabricBlockHash = fabricBlockHash;
     }
-
+    
     public String getFabricBlockHeight() {
         return fabricBlockHeight;
     }
